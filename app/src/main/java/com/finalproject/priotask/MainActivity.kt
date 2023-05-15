@@ -10,6 +10,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,7 +26,13 @@ class MainActivity : ComponentActivity() {
             PrioTaskTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    Greeting("Android")
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "login") {
+                        composable("login") {
+//                            val viewModel = hiltViewModel<LoginViewModel>()
+                            Greeting(name = "Androidddd")
+                        }
+                    }
                 }
             }
         }
