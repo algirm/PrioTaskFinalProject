@@ -3,5 +3,10 @@
 
     <style name="Theme.PrioTask" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/purple_700</item>
+<!--        <item name="android:windowSplashScreenBackground">@color/white</item>-->
+    </style>
+    
+    <style name="PrioTask.Splash" parent="Theme.PrioTask">
+        <item name="android:windowBackground">@color/purple_200</item>
     </style>
 </resources>
