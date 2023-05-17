@@ -1,47 +1,56 @@
 package com.finalproject.priotask.presentation.login
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.OutlinedTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.res.ResourcesCompat
 import com.finalproject.priotask.R
+import com.finalproject.priotask.common.LoginTextField
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 
 @Composable
-fun LoginScreen() {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun LoginScreen(
+    uiState: LoginUiState = LoginUiState(),
+    onEmailTextChange: (String) -> Unit = {},
+    onPasswordTextChange: (String) -> Unit = {},
+    onRegisterClick: () -> Unit = {},
+    onLoginClick: () -> Unit = {}
+) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
         LazyColumn(
-            modifier = Modifier.padding(horizontal = 0.dp),
+            modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 18.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Image(
@@ -50,18 +59,62 @@ fun LoginScreen() {
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(60.dp)
+                            .padding(48.dp)
                     )
                     Text(text = "Login", fontWeight = FontWeight.Bold, fontSize = 24.sp)
-                    OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
-                        placeholder = {
-                            Text(text = "Username")
-                        },
-                        shape = RoundedCornerShape(48.dp)
+                    Spacer(modifier = Modifier.height(32.dp))
+                    LoginTextField(
+                        value = uiState.emailText,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        placeHolder = "Email",
+                        onValueChange = onEmailTextChange
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                    LoginTextField(
+                        value = uiState.passwordText,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        placeHolder = "Password",
+                        onValueChange = onPasswordTextChange,
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
+            item {
+                Row {
+                    Text(text = "Belum punya akun? ")
+                    Text(
+                        text = "Register",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable { onRegisterClick() })
+                }
+            }
+            item {
+                Spacer(modifier = Modifier.height(120.dp))
+            }
+            item {
+                Button(
+                    onClick = onLoginClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 18.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "LOGIN",
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
+            }
+            item {
+                Spacer(modifier = Modifier.height(18.dp))
             }
         }
     }
