@@ -1,4 +1,4 @@
-package com.finalproject.priotask.presentation.login
+package com.finalproject.priotask.presentation.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,12 +33,13 @@ import com.finalproject.priotask.common.FormTextField
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 
 @Composable
-fun LoginScreen(
-    uiState: LoginUiState = LoginUiState(),
+fun RegisterScreen(
+    uiState: RegisterUiState = RegisterUiState(),
     onEmailTextChange: (String) -> Unit = {},
+    onFullNameTextChange: (String) -> Unit = {},
     onPasswordTextChange: (String) -> Unit = {},
     onRegisterClick: () -> Unit = {},
-    onLoginClick: () -> Unit = {}
+    onLoginHereClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -61,7 +63,7 @@ fun LoginScreen(
                             .fillMaxSize()
                             .padding(48.dp)
                     )
-                    Text(text = "Login", fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                    Text(text = "Register", fontWeight = FontWeight.Bold, fontSize = 24.sp)
                     Spacer(modifier = Modifier.height(32.dp))
                     FormTextField(
                         value = uiState.emailText,
@@ -71,6 +73,17 @@ fun LoginScreen(
                         ),
                         placeHolder = "Email",
                         onValueChange = onEmailTextChange
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                    FormTextField(
+                        value = uiState.fullNameText,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            capitalization = KeyboardCapitalization.Words,
+                            imeAction = ImeAction.Next
+                        ),
+                        placeHolder = "Nama Lengkap",
+                        onValueChange = onFullNameTextChange
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                     FormTextField(
@@ -88,11 +101,11 @@ fun LoginScreen(
             }
             item {
                 Row {
-                    Text(text = "Belum punya akun? ")
+                    Text(text = "Sudah punya akun? ")
                     Text(
-                        text = "Register",
+                        text = "Login disini",
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable { onRegisterClick() })
+                        modifier = Modifier.clickable { onLoginHereClick() })
                 }
             }
             item {
@@ -100,14 +113,14 @@ fun LoginScreen(
             }
             item {
                 Button(
-                    onClick = onLoginClick,
+                    onClick = onRegisterClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 18.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = "LOGIN",
+                        text = "REGISTER",
                         fontSize = 18.sp,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
@@ -122,8 +135,8 @@ fun LoginScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun RegisterScreenPreview() {
     PrioTaskTheme {
-        LoginScreen()
+        RegisterScreen()
     }
 }

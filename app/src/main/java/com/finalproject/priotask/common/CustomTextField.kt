@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 
 @Composable
-fun LoginTextField(
+fun FormTextField(
     value: String = "",
     placeHolder: String = "",
     onValueChange: (String) -> Unit = {},
@@ -72,9 +72,9 @@ fun LoginTextField(
 fun LoginTextFieldPreview() {
     PrioTaskTheme {
         Column(Modifier.padding(12.dp)) {
-            LoginTextField(placeHolder = "Username")
+            FormTextField(placeHolder = "Username")
             Spacer(modifier = Modifier.height(32.dp))
-            LoginTextField(placeHolder = "Password")
+            FormTextField(placeHolder = "Password")
         }
     }
 }
