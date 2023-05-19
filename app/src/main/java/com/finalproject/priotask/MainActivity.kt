@@ -36,7 +36,10 @@ import com.finalproject.priotask.presentation.register.RegisterUiState
 import com.finalproject.priotask.presentation.register.RegisterViewModel
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 import com.finalproject.priotask.util.collectWithLifecycle
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -47,21 +50,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             PrioTaskTheme {
                 val navController: NavHostController = rememberNavController()
-//                val scaffoldState = rememberScaffoldState()
                 val snackbarHostState = remember { SnackbarHostState() }
-                val applicationContext = LocalContext.current.applicationContext
-                
-//                NavHost(
-//                    modifier = Modifier,
-//                    navController = navController, 
-//                    startDestination = "login"
-//                ) {
-//                    
-//                }
-                
+
                 Scaffold(
                     snackbarHost = { SnackbarHost(snackbarHostState) }
-//                    snackbarHost = { SnackbarHost(it) }
                 ) {
                     NavHost(
                         navController = navController,
@@ -129,6 +121,7 @@ class MainActivity : ComponentActivity() {
                                         RegisterUiEvent.RegisterSuccess -> {
                                             scope.launch {
                                                 snackbarHostState.showSnackbar("Register Success")
+                                                Log.d("TAG", "onCreate: snackbar shown")
                                             }
                                         }
                                         RegisterUiEvent.NavigateBackToLoginScreen -> {
@@ -136,9 +129,7 @@ class MainActivity : ComponentActivity() {
                                             navController.navigateUp()
                                             Log.d("TAG", "register event: after NavigateUp")
                                         }
-                                        null -> {
-//                                        Log.d("TAG", "register event: ${Random.nextInt()}")
-                                        }
+                                        null -> { /* todo error wrong event type sent here */ }
                                     }
                                 }
                             }

@@ -24,7 +24,9 @@ class RegisterViewModel @Inject constructor() : BaseViewModel() {
             is RegisterUiIntent.FullNameTextChanged -> _uiState.update { it.copy(fullNameText = registerUiIntent.fullNameText) }
             is RegisterUiIntent.PasswordTextChanged -> _uiState.update { it.copy(passwordText = registerUiIntent.passwordText) }
             RegisterUiIntent.RegisterClicked -> {
-                publishEvent(RegisterUiEvent.RegisterSuccess) // TODO
+                viewModelScope.launch {
+                    publishEvent(RegisterUiEvent.RegisterSuccess) // TODO
+                }
             }
             RegisterUiIntent.LoginHereClicked -> {
                 viewModelScope.launch {
