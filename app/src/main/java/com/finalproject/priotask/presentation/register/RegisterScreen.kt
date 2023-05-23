@@ -18,13 +18,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,7 +66,15 @@ fun RegisterScreen(
                             .fillMaxSize()
                             .padding(48.dp)
                     )
-                    Text(text = "Register", fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                    Text(text = "PrioTask", fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Membantu anda dalam memanajemen tugas-tugas kuliah",
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray,
+                        fontFamily = FontFamily.Default
+                    )
                     Spacer(modifier = Modifier.height(32.dp))
                     FormTextField(
                         value = uiState.emailText,
@@ -109,7 +120,7 @@ fun RegisterScreen(
                 }
             }
             item {
-                Spacer(modifier = Modifier.height(120.dp))
+                Spacer(modifier = Modifier.height(48.dp))
             }
             item {
                 Button(
@@ -133,7 +144,7 @@ fun RegisterScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 @Composable
 fun RegisterScreenPreview() {
     PrioTaskTheme {

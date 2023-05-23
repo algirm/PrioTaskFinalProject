@@ -1,14 +1,9 @@
 package com.finalproject.priotask
 
-import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.DrawableRes
-import androidx.annotation.StyleRes
-import androidx.annotation.StyleableRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -26,8 +21,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.finalproject.priotask.presentation.login.*
-import com.finalproject.priotask.presentation.register.*
+import com.finalproject.priotask.presentation.login.LoginScreen
+import com.finalproject.priotask.presentation.login.LoginUiEvent
+import com.finalproject.priotask.presentation.login.LoginUiIntent
+import com.finalproject.priotask.presentation.login.LoginUiState
+import com.finalproject.priotask.presentation.login.LoginViewModel
+import com.finalproject.priotask.presentation.register.RegisterScreen
+import com.finalproject.priotask.presentation.register.RegisterUiEvent
+import com.finalproject.priotask.presentation.register.RegisterUiIntent
+import com.finalproject.priotask.presentation.register.RegisterUiState
+import com.finalproject.priotask.presentation.register.RegisterViewModel
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 import com.finalproject.priotask.util.collectWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +40,7 @@ import kotlin.random.Random
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
             PrioTaskTheme {
@@ -70,10 +73,11 @@ class MainActivity : ComponentActivity() {
                             )
                             LaunchedEffect(Unit) {
                                 loginViewModel.event.collect { uiEvent ->
-                                    when (val loginUiEvent = uiEvent as? LoginUiEvent) {
+                                    when (uiEvent as? LoginUiEvent) {
                                         LoginUiEvent.NavigateToRegisterScreen -> {
                                             navController.navigate(route = "register")
                                         }
+
                                         null -> {}
                                     }
                                 }
@@ -109,25 +113,28 @@ class MainActivity : ComponentActivity() {
                             val scope = rememberCoroutineScope()
 //                            LaunchedEffect(Unit) {
 //                                registerViewModel.event.collect { uiEvent ->
-                                registerViewModel.event.collectWithLifecycle(minActiveState = Lifecycle.State.RESUMED) { uiEvent ->
-                                    when (val registerUiEvent = uiEvent as? RegisterUiEvent) {
-                                        RegisterUiEvent.RegisterSuccess -> {
-                                            scope.launch {
-                                                Log.d("TAG", "onCreate: snackbar before show")
-                                                snackbarHostState.showSnackbar("Register Success")
-                                                Log.d("TAG", "onCreate: snackbar shown")
-                                            }
+                            registerViewModel.event.collectWithLifecycle(minActiveState = Lifecycle.State.RESUMED) { uiEvent ->
+                                when (uiEvent as? RegisterUiEvent) {
+                                    RegisterUiEvent.RegisterSuccess -> {
+                                        scope.launch {
+                                            Log.d("TAG", "onCreate: snackbar before show")
+                                            snackbarHostState.showSnackbar("Register Success")
+                                            Log.d("TAG", "onCreate: snackbar shown")
                                         }
-                                        RegisterUiEvent.NavigateBackToLoginScreen -> {
-                                            Log.d("TAG", "register event: ${Random.nextInt()}")
-                                            navController.navigateUp()
-                                            Log.d("TAG", "register event: after NavigateUp")
-                                        }
-                                        null -> { /* todo error wrong event type sent here */ }
+                                    }
+
+                                    RegisterUiEvent.NavigateBackToLoginScreen -> {
+                                        Log.d("TAG", "register event: ${Random.nextInt()}")
+                                        navController.navigateUp()
+                                        Log.d("TAG", "register event: after NavigateUp")
+                                    }
+
+                                    null -> { /* todo error wrong event type sent here */
                                     }
                                 }
+                            }
 //                            }
-                            
+
                         }
                     }
                 }
