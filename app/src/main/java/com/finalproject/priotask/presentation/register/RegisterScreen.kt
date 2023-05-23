@@ -112,10 +112,11 @@ fun RegisterScreen(
             }
             item {
                 Row {
-                    Text(text = "Sudah punya akun? ")
+                    Text(text = "Sudah punya akun? ", color = Color.Gray)
                     Text(
                         text = "Login disini",
                         fontWeight = FontWeight.Bold,
+                        color = Color.DarkGray,
                         modifier = Modifier.clickable { onLoginHereClick() })
                 }
             }

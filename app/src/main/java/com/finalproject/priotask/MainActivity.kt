@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -13,10 +17,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,14 +39,34 @@ import com.finalproject.priotask.presentation.register.RegisterUiState
 import com.finalproject.priotask.presentation.register.RegisterViewModel
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 import com.finalproject.priotask.util.collectWithLifecycle
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    
+    private val mainViewModel: MainViewModel by viewModels()
+    
+    private var startRoute = "login"
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+        lifecycleScope.launch { 
+//            mainViewModel.event.collect { uiEvent ->
+//                when (uiEvent as? LoginUiEvent) {
+//                    LoginUiEvent.NavigateToHomeScreen -> {
+//                        startRoute = "home"
+//                    }
+//                    LoginUiEvent.NavigateToRegisterScreen -> {}
+//                    null -> {}
+//                }
+//            }
+        }
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            startRoute = "home"
+        }
         super.onCreate(savedInstanceState)
         setContent {
             PrioTaskTheme {
@@ -52,12 +78,21 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = "login",
+                        startDestination = startRoute,
                         modifier = Modifier.padding(it)
                     ) {
                         composable("login") {
                             val loginViewModel = hiltViewModel<LoginViewModel>()
                             val loginUiState: LoginUiState by loginViewModel.uiState.collectAsStateWithLifecycle()
+                            
+//                            LaunchedEffect(Unit) {
+////                                if (loginUiState.isUserLoggedIn) {
+//                                if (FirebaseAuth.getInstance().currentUser == null) {
+//                                    navController.popBackStack()
+//                                    navController.navigate("home")
+//                                }
+//                            }
+                            
                             LoginScreen(
                                 uiState = loginUiState,
                                 onEmailTextChange = { emailText ->
@@ -77,8 +112,20 @@ class MainActivity : ComponentActivity() {
                                         LoginUiEvent.NavigateToRegisterScreen -> {
                                             navController.navigate(route = "register")
                                         }
-
+                                        LoginUiEvent.NavigateToHomeScreen -> {
+                                            navController.popBackStack()
+                                            navController.navigate("home")
+                                        }
                                         null -> {}
+                                    }
+                                }
+                            }
+                            val scope = rememberCoroutineScope()
+                            LaunchedEffect(loginUiState.errorMessage) {
+                                scope.launch {
+                                    loginUiState.errorMessage?.let { errorMessage ->
+                                        snackbarHostState.showSnackbar(errorMessage)
+                                        loginViewModel.errorMessageConsumed()
                                     }
                                 }
                             }
@@ -135,6 +182,11 @@ class MainActivity : ComponentActivity() {
                             }
 //                            }
 
+                        }
+                        composable("home") {
+                            Box(modifier = Modifier
+                                .background(color = Color.Magenta)
+                                .fillMaxSize())
                         }
                     }
                 }
