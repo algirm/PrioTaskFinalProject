@@ -23,51 +23,38 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.finalproject.priotask.presentation.login.LoginScreen
-import com.finalproject.priotask.presentation.login.LoginUiEvent
-import com.finalproject.priotask.presentation.login.LoginUiIntent
-import com.finalproject.priotask.presentation.login.LoginUiState
-import com.finalproject.priotask.presentation.login.LoginViewModel
-import com.finalproject.priotask.presentation.register.RegisterScreen
-import com.finalproject.priotask.presentation.register.RegisterUiEvent
-import com.finalproject.priotask.presentation.register.RegisterUiIntent
-import com.finalproject.priotask.presentation.register.RegisterUiState
-import com.finalproject.priotask.presentation.register.RegisterViewModel
+import com.finalproject.priotask.presentation.login.*
+import com.finalproject.priotask.presentation.register.*
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 import com.finalproject.priotask.util.collectWithLifecycle
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    
+
     private val mainViewModel: MainViewModel by viewModels()
-    
+
     private var startRoute = "login"
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-        lifecycleScope.launch { 
-//            mainViewModel.event.collect { uiEvent ->
-//                when (uiEvent as? LoginUiEvent) {
-//                    LoginUiEvent.NavigateToHomeScreen -> {
-//                        startRoute = "home"
-//                    }
-//                    LoginUiEvent.NavigateToRegisterScreen -> {}
-//                    null -> {}
-//                }
-//            }
-        }
-        if (FirebaseAuth.getInstance().currentUser == null) {
-            startRoute = "home"
-        }
         super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                if (mainViewModel.checkUserLogin() == null) startRoute = "home"
+                setContentApp()
+            }
+        }
+    }
+    
+    private fun setContentApp() {
         setContent {
             PrioTaskTheme {
                 val navController: NavHostController = rememberNavController()
@@ -84,15 +71,7 @@ class MainActivity : ComponentActivity() {
                         composable("login") {
                             val loginViewModel = hiltViewModel<LoginViewModel>()
                             val loginUiState: LoginUiState by loginViewModel.uiState.collectAsStateWithLifecycle()
-                            
-//                            LaunchedEffect(Unit) {
-////                                if (loginUiState.isUserLoggedIn) {
-//                                if (FirebaseAuth.getInstance().currentUser == null) {
-//                                    navController.popBackStack()
-//                                    navController.navigate("home")
-//                                }
-//                            }
-                            
+
                             LoginScreen(
                                 uiState = loginUiState,
                                 onEmailTextChange = { emailText ->
@@ -158,8 +137,6 @@ class MainActivity : ComponentActivity() {
                                 onLoginHereClick = { registerViewModel.onIntent(RegisterUiIntent.LoginHereClicked) }
                             )
                             val scope = rememberCoroutineScope()
-//                            LaunchedEffect(Unit) {
-//                                registerViewModel.event.collect { uiEvent ->
                             registerViewModel.event.collectWithLifecycle(minActiveState = Lifecycle.State.RESUMED) { uiEvent ->
                                 when (uiEvent as? RegisterUiEvent) {
                                     RegisterUiEvent.RegisterSuccess -> {
@@ -184,9 +161,11 @@ class MainActivity : ComponentActivity() {
 
                         }
                         composable("home") {
-                            Box(modifier = Modifier
-                                .background(color = Color.Magenta)
-                                .fillMaxSize())
+                            Box(
+                                modifier = Modifier
+                                    .background(color = Color.Magenta)
+                                    .fillMaxSize()
+                            )
                         }
                     }
                 }
