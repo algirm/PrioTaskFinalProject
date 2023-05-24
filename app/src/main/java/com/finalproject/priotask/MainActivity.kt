@@ -12,10 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -94,8 +91,11 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(route = "register")
                                     }
                                     LoginUiEvent.NavigateToHomeScreen -> {
-                                        navController.popBackStack()
-                                        navController.navigate("home")
+                                        navController.navigate("home") {
+                                            popUpTo("login") {
+                                                inclusive = true
+                                            }
+                                        }
                                     }
                                     null -> {}
                                 }
@@ -154,8 +154,11 @@ class MainActivity : ComponentActivity() {
                                         Log.d("TAG", "register event: after NavigateUp")
                                     }
                                     RegisterUiEvent.NavigateToHomeScreen -> {
-                                        navController
-                                        navController.navigate("home")
+                                        navController.navigate("home") {
+                                            popUpTo("login") {
+                                                inclusive = true
+                                            }
+                                        }
                                     }
                                     null -> { /* todo error wrong event type sent here */
                                     }
