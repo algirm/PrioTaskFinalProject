@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -121,7 +122,13 @@ fun RegisterScreen(
                 }
             }
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                if (uiState.isLoading) {
+                    Box(modifier = Modifier.padding(vertical = 24.dp)) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    Spacer(modifier = Modifier.height(48.dp))
+                }
             }
             item {
                 Button(
@@ -149,6 +156,6 @@ fun RegisterScreen(
 @Composable
 fun RegisterScreenPreview() {
     PrioTaskTheme {
-        RegisterScreen()
+        RegisterScreen(uiState = RegisterUiState(isLoading = true))
     }
 }

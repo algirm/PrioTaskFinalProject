@@ -25,14 +25,12 @@ class LoginViewModel @Inject constructor(
             LoginUiIntent.RegisterClicked -> {
                 publishEvent(LoginUiEvent.NavigateToRegisterScreen)
             }
-
             LoginUiIntent.LoginClicked -> login()
         }
     }
 
     private fun login() = viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }
-//        delay(2000)
         authRepository.login(
             _uiState.value.emailText,
             _uiState.value.passwordText
@@ -40,12 +38,11 @@ class LoginViewModel @Inject constructor(
             result.onSuccess {
                 publishEvent(LoginUiEvent.NavigateToHomeScreen)
             }.onFailure { t ->
-//                _uiState.update { it.copy(isLoading = false, errorMessage = t.message) }
-//                publishEvent(LoginUiEvent.NavigateToHomeScreen)
+                _uiState.update { it.copy(isLoading = false, errorMessage = t.message) }
             }
         }
     }
-    
+
     fun errorMessageConsumed() {
         _uiState.update { it.copy(errorMessage = null) }
     }

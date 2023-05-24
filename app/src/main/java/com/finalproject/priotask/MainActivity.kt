@@ -32,6 +32,7 @@ import com.finalproject.priotask.presentation.login.*
 import com.finalproject.priotask.presentation.register.*
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 import com.finalproject.priotask.util.collectWithLifecycle
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -42,18 +43,20 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     private var startRoute = "login"
+    private var userLoggedIn: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                if (mainViewModel.checkUserLogin() == null) startRoute = "home"
+                userLoggedIn = mainViewModel.checkUserLogin()
+                if (userLoggedIn != null) startRoute = "home"
                 setContentApp()
             }
         }
     }
-    
+
     private fun setContentApp() {
         setContent {
             PrioTaskTheme {
@@ -85,26 +88,24 @@ class MainActivity : ComponentActivity() {
                                 onRegisterClick = { loginViewModel.onIntent(LoginUiIntent.RegisterClicked) },
                                 onLoginClick = { loginViewModel.onIntent(LoginUiIntent.LoginClicked) }
                             )
-                            LaunchedEffect(Unit) {
-                                loginViewModel.event.collect { uiEvent ->
-                                    when (uiEvent as? LoginUiEvent) {
-                                        LoginUiEvent.NavigateToRegisterScreen -> {
-                                            navController.navigate(route = "register")
-                                        }
-                                        LoginUiEvent.NavigateToHomeScreen -> {
-                                            navController.popBackStack()
-                                            navController.navigate("home")
-                                        }
-                                        null -> {}
+                            loginViewModel.event.collectWithLifecycle(minActiveState = Lifecycle.State.RESUMED) { uiEvent ->
+                                when (uiEvent as? LoginUiEvent) {
+                                    LoginUiEvent.NavigateToRegisterScreen -> {
+                                        navController.navigate(route = "register")
                                     }
+                                    LoginUiEvent.NavigateToHomeScreen -> {
+                                        navController.popBackStack()
+                                        navController.navigate("home")
+                                    }
+                                    null -> {}
                                 }
                             }
                             val scope = rememberCoroutineScope()
                             LaunchedEffect(loginUiState.errorMessage) {
                                 scope.launch {
                                     loginUiState.errorMessage?.let { errorMessage ->
-                                        snackbarHostState.showSnackbar(errorMessage)
                                         loginViewModel.errorMessageConsumed()
+                                        snackbarHostState.showSnackbar(errorMessage)
                                     }
                                 }
                             }
@@ -152,13 +153,23 @@ class MainActivity : ComponentActivity() {
                                         navController.navigateUp()
                                         Log.d("TAG", "register event: after NavigateUp")
                                     }
-
+                                    RegisterUiEvent.NavigateToHomeScreen -> {
+                                        navController
+                                        navController.navigate("home")
+                                    }
                                     null -> { /* todo error wrong event type sent here */
                                     }
                                 }
                             }
 //                            }
-
+                            LaunchedEffect(registerUiState.errorMessage) {
+                                scope.launch {
+                                    registerUiState.errorMessage?.let { errorMessage ->
+                                        registerViewModel.errorMessageShown()
+                                        snackbarHostState.showSnackbar(errorMessage)
+                                    }
+                                }
+                            }
                         }
                         composable("home") {
                             Box(
