@@ -41,10 +41,14 @@ class MainActivity : ComponentActivity() {
 
     private var startRoute = "login"
     private var userLoggedIn: FirebaseUser? = null
+    private var isLoading: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val appSplashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        appSplashScreen.setKeepOnScreenCondition { 
+            isLoading
+        }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 userLoggedIn = mainViewModel.checkUserLogin()
@@ -52,6 +56,11 @@ class MainActivity : ComponentActivity() {
                 setContentApp()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        isLoading = false
     }
 
     private fun setContentApp() {

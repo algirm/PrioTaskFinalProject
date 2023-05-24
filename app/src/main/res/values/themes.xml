@@ -7,8 +7,4 @@
         <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/white</item>
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/splash_inset</item>
     </style>
-    
-    <style name="PrioTask.Splash" parent="Theme.PrioTask">
-        <item name="android:windowBackground">@color/purple_200</item>
-    </style>
 </resources>

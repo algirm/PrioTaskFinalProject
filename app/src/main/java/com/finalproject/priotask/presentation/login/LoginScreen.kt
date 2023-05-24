@@ -139,7 +139,8 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
+//@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
+@Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     PrioTaskTheme {
