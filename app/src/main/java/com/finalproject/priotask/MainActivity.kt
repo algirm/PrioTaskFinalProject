@@ -22,12 +22,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.finalproject.priotask.domain.model.User
 import com.finalproject.priotask.presentation.home.HomeScreen
+import com.finalproject.priotask.presentation.home.HomeViewModel
 import com.finalproject.priotask.presentation.login.*
 import com.finalproject.priotask.presentation.register.*
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 import com.finalproject.priotask.util.collectWithLifecycle
-import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     private var startRoute = "login"
-    private var userLoggedIn: FirebaseUser? = null
+    private var userLoggedIn: User? = null
     private var isLoading: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -173,7 +174,11 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable("home") {
-                            HomeScreen()
+                            val homeViewModel: HomeViewModel = hiltViewModel()
+                            val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+                            HomeScreen(
+                                uiState = homeUiState
+                            )
                         }
                     }
                 }

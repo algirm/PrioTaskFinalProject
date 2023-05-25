@@ -1,9 +1,9 @@
 package com.finalproject.priotask.data.repository
 
 import android.util.Log
+import com.finalproject.priotask.domain.model.User
 import com.finalproject.priotask.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -18,12 +18,12 @@ class AuthRepositoryImpl @Inject constructor(
 
     private val TAG = this@AuthRepositoryImpl.javaClass.simpleName
 
-    override fun login(email: String, password: String): Flow<Result<FirebaseUser>> = callbackFlow {
+    override fun login(email: String, password: String): Flow<Result<User>> = callbackFlow {
         try {
             firebaseAuth
                 .signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener { authResult ->
-                    authResult.user?.let { trySend(Result.success(it)) }
+                    authResult.user?.let { trySend(Result.success(User(it.displayName!!, it.email!!))) }
                         ?: trySend(Result.failure(defaultErrorAuthException))
                 }.addOnFailureListener { e -> trySend(Result.failure(e)) }
         } catch (e: Exception) {
@@ -35,16 +35,24 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getUser(): FirebaseUser? = firebaseAuth.currentUser
+    override fun getUser(): User? {
+        return try {
+            val user = firebaseAuth.currentUser!!
+            User(user.displayName!!, user.email!!)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
-    override fun registerWithEmailAndPassword(fullName: String, email: String, password: String) = callbackFlow<Result<FirebaseUser>> {
+    override fun registerWithEmailAndPassword(fullName: String, email: String, password: String) = callbackFlow<Result<User>> {
         try {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener { authResult ->
                     authResult.user
                         ?.updateProfile(userProfileChangeRequest { displayName = fullName })
                         ?.addOnSuccessListener {
-                            authResult.user?.let { user -> trySend(Result.success(user)) }
+                            authResult.user?.let { user -> trySend(Result.success(User(user.displayName!!, user.email!!))) }
                                 ?: trySend(Result.failure(defaultErrorAuthException))
                         }?.addOnFailureListener { trySend(Result.failure(it)) }
                 }.addOnFailureListener {
