@@ -37,6 +37,7 @@ import com.finalproject.priotask.ui.theme.PrioTaskTheme
 
 @Composable
 fun LoginScreen(
+    modifier: Modifier = Modifier,
     uiState: LoginUiState = LoginUiState(),
     onEmailTextChange: (String) -> Unit = {},
     onPasswordTextChange: (String) -> Unit = {},
@@ -44,10 +45,10 @@ fun LoginScreen(
     onLoginClick: () -> Unit = {}
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         LazyColumn(
-            modifier = Modifier,
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {

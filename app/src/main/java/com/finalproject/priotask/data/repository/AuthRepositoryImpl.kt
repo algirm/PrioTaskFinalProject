@@ -35,7 +35,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun checkUserLogin(): FirebaseUser? = firebaseAuth.currentUser
+    override fun getUser(): FirebaseUser? = firebaseAuth.currentUser
 
     override fun registerWithEmailAndPassword(fullName: String, email: String, password: String) = callbackFlow<Result<FirebaseUser>> {
         try {

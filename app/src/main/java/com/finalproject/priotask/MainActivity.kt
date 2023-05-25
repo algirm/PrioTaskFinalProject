@@ -5,9 +5,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -17,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -26,6 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.finalproject.priotask.presentation.home.HomeScreen
 import com.finalproject.priotask.presentation.login.*
 import com.finalproject.priotask.presentation.register.*
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
@@ -62,11 +59,11 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     snackbarHost = { SnackbarHost(snackbarHostState) }
-                ) {
+                ) { padding ->
                     NavHost(
                         navController = navController,
                         startDestination = startRoute,
-                        modifier = Modifier.padding(it)
+                        modifier = Modifier.padding(padding)
                     ) {
                         composable("login") {
                             val loginViewModel = hiltViewModel<LoginViewModel>()
@@ -83,7 +80,8 @@ class MainActivity : ComponentActivity() {
                                     )
                                 },
                                 onRegisterClick = { loginViewModel.onIntent(LoginUiIntent.RegisterClicked) },
-                                onLoginClick = { loginViewModel.onIntent(LoginUiIntent.LoginClicked) }
+                                onLoginClick = { loginViewModel.onIntent(LoginUiIntent.LoginClicked) },
+                                modifier = Modifier.padding(padding)
                             )
                             loginViewModel.event.collectWithLifecycle(minActiveState = Lifecycle.State.RESUMED) { uiEvent ->
                                 when (uiEvent as? LoginUiEvent) {
@@ -105,7 +103,7 @@ class MainActivity : ComponentActivity() {
                                 scope.launch {
                                     loginUiState.errorMessage?.let { errorMessage ->
                                         loginViewModel.errorMessageConsumed()
-                                        snackbarHostState.showSnackbar(errorMessage)
+                                        snackbarHostState.showSnackbar(errorMessage, actionLabel = "OK")
                                     }
                                 }
                             }
@@ -169,17 +167,13 @@ class MainActivity : ComponentActivity() {
                                 scope.launch {
                                     registerUiState.errorMessage?.let { errorMessage ->
                                         registerViewModel.errorMessageShown()
-                                        snackbarHostState.showSnackbar(errorMessage)
+                                        snackbarHostState.showSnackbar(errorMessage, actionLabel = "OK")
                                     }
                                 }
                             }
                         }
                         composable("home") {
-                            Box(
-                                modifier = Modifier
-                                    .background(color = Color.Magenta)
-                                    .fillMaxSize()
-                            )
+                            HomeScreen()
                         }
                     }
                 }
