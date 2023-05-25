@@ -11,9 +11,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : BaseViewModel() {
-    
-    suspend fun checkUserLogin() = viewModelScope.async { 
-        authRepository.checkUserLogin()
-    }.await()
+
+    fun checkUserLogin() = authRepository.checkUserLogin()
     
 }

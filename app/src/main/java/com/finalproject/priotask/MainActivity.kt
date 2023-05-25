@@ -12,15 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -46,23 +47,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val appSplashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        appSplashScreen.setKeepOnScreenCondition { 
-            isLoading
-        }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                userLoggedIn = mainViewModel.checkUserLogin()
-                if (userLoggedIn != null) startRoute = "home"
-                setContentApp()
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
+        appSplashScreen.setKeepOnScreenCondition { isLoading }
+        userLoggedIn = mainViewModel.checkUserLogin()
+        if (userLoggedIn != null) startRoute = "home"
+        setContentApp()
         isLoading = false
     }
-
+    
     private fun setContentApp() {
         setContent {
             PrioTaskTheme {

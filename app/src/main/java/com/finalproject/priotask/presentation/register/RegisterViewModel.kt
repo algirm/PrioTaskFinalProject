@@ -24,16 +24,10 @@ class RegisterViewModel @Inject constructor(
             is RegisterUiIntent.FullNameTextChanged -> _uiState.update { it.copy(fullNameText = registerUiIntent.fullNameText) }
             is RegisterUiIntent.PasswordTextChanged -> _uiState.update { it.copy(passwordText = registerUiIntent.passwordText) }
             RegisterUiIntent.RegisterClicked -> register()
-            RegisterUiIntent.LoginHereClicked -> {
-                viewModelScope.launch {
-                    publishEvent(RegisterUiEvent.NavigateBackToLoginScreen)
-//                    delay(1000)
-//                    publishEvent(object : UiEvent {})
-                }
-            }
+            RegisterUiIntent.LoginHereClicked -> publishEvent(RegisterUiEvent.NavigateBackToLoginScreen)
         }
     }
-    
+
     fun register() = viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }
         authRepository.registerWithEmailAndPassword(
@@ -42,14 +36,14 @@ class RegisterViewModel @Inject constructor(
             _uiState.value.passwordText
         ).collect { result ->
             result.onSuccess {
-                publishEvent(RegisterUiEvent.RegisterSuccess) // TODO
+                publishEvent(RegisterUiEvent.RegisterSuccess)
                 publishEvent(RegisterUiEvent.NavigateToHomeScreen)
             }.onFailure { t ->
                 _uiState.update { it.copy(isLoading = false, errorMessage = t.message) }
             }
         }
     }
-    
+
     fun errorMessageShown() {
         _uiState.update { it.copy(errorMessage = null) }
     }
