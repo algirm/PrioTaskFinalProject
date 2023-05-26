@@ -12,12 +12,13 @@ import java.io.IOException
 
 private const val RETRY_DELAY_MILLIS = 10_000L
 
-fun interface GetTasksUseCase : () -> Flow<Result<List<Task>>>
+fun interface GetTasksUseCase : (Boolean) -> Flow<Result<List<Task>>>
 
 fun getTasks(
-    taskRepository: TaskRepository
+    taskRepository: TaskRepository,
+    forceRefresh: Boolean
 ): Flow<Result<List<Task>>> = taskRepository
-    .getTasks()
+    .getTasks(forceRefresh)
     .map { resultOf { it } }
     .retryWhen { cause, _ ->
         if (cause is IOException) {

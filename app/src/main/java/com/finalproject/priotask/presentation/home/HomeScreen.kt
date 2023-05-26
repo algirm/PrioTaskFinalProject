@@ -32,10 +32,10 @@ import com.finalproject.priotask.ui.theme.PrioTaskTheme
 fun HomeScreen(
     uiState: HomeUiState = HomeUiState(),
     onAddTaskButtonClick: () -> Unit = {},
-    onSortingTypeClick: (SortState) -> Unit = {}
+    onSortingTypeClick: (SortState) -> Unit = {},
+    onRefresh: () -> Unit = {}
 ) {
-    val refreshing = remember { false }
-    val pullRefreshState = rememberPullRefreshState(refreshing, { })
+    val pullRefreshState = rememberPullRefreshState(uiState.isRefreshing, onRefresh)
     val listState = rememberLazyListState()
     val isCollapsed: Boolean by remember {
         derivedStateOf { listState.firstVisibleItemIndex > 1 }
@@ -59,7 +59,7 @@ fun HomeScreen(
                 .padding(it)
                 .pullRefresh(pullRefreshState)
         ) {
-            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
+            PullRefreshIndicator(uiState.isRefreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 state = listState

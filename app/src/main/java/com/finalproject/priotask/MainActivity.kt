@@ -178,6 +178,7 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             val homeViewModel: HomeViewModel = hiltViewModel()
                             val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+                            val scope = rememberCoroutineScope()
                             HomeScreen(
                                 uiState = homeUiState,
                                 onAddTaskButtonClick = homeViewModel::addTask,
@@ -188,8 +189,17 @@ class MainActivity : ComponentActivity() {
                                         SortState.Time -> HomeUiIntent.SortingTimeClicked
                                     }
                                     homeViewModel.onIntent(sortIntent)
-                                }
+                                },
+                                onRefresh = { homeViewModel.onIntent(HomeUiIntent.RefreshContent) }
                             )
+                            LaunchedEffect(homeUiState.errorMessage) {
+                                scope.launch { 
+                                    homeUiState.errorMessage?.let { errorMessage ->
+                                        homeViewModel.errorMessageShown()
+                                        snackbarHostState.showSnackbar(errorMessage, "OK")
+                                    }
+                                }
+                            }
                         }
                     }
                 }

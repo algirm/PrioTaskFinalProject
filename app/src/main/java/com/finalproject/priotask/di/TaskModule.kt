@@ -18,7 +18,7 @@ object TaskModule {
     @Provides
     @ViewModelScoped
     fun provideGetTasksUseCase(taskRepository: TaskRepository): GetTasksUseCase {
-        return GetTasksUseCase { getTasks(taskRepository) }
+        return GetTasksUseCase { getTasks(taskRepository, it) }
     }
 }
 

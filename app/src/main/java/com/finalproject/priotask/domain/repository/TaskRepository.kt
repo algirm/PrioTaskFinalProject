@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
     
-    fun getTasks(): Flow<List<Task>>
+    fun getTasks(forceRefresh: Boolean): Flow<List<Task>>
 
     fun addTask(task: Task): Flow<Result<Unit>>
 }

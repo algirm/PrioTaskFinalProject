@@ -8,6 +8,7 @@ import com.finalproject.priotask.domain.model.Task
 import com.finalproject.priotask.domain.repository.TaskRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Source
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -21,10 +22,10 @@ class TaskRepositoryImpl @Inject constructor(
 
     private val TAG = this.javaClass.simpleName
 
-    override fun getTasks(): Flow<List<Task>> = callbackFlow {
+    override fun getTasks(forceRefresh: Boolean): Flow<List<Task>> = callbackFlow {
         val result = firebaseFirestore
             .collection(firebaseAuth.currentUser!!.uid)
-            .get()
+            .get(if (forceRefresh) Source.SERVER else Source.DEFAULT)
             .await()
 
         val listTask = result.toObjects(TaskDtoModel::class.java).map { it.toDomainModel() }
