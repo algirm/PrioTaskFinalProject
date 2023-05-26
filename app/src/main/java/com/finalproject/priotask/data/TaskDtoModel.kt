@@ -4,9 +4,9 @@ import com.finalproject.priotask.domain.model.Priority
 import java.util.*
 
 data class TaskDtoModel(
-    val id: String,
-    val name: String,
-    val description: String,
-    val priority: Int,
-    val deadline: Date
+    val id: String? = null,
+    val name: String? = null,
+    val description: String? = null,
+    val priority: Int? = null,
+    val deadline: Date? = null
 )

@@ -1,7 +1,9 @@
 package com.finalproject.priotask.data.repository
 
 import android.util.Log
-import com.finalproject.priotask.data.toDto
+import com.finalproject.priotask.data.TaskDtoModel
+import com.finalproject.priotask.data.toDomainModel
+import com.finalproject.priotask.data.toDtoModel
 import com.finalproject.priotask.domain.model.Task
 import com.finalproject.priotask.domain.repository.TaskRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -25,8 +27,8 @@ class TaskRepositoryImpl @Inject constructor(
             .get()
             .await()
 
-        val listTask = result.toObjects(Task::class.java)
-
+        val listTask = result.toObjects(TaskDtoModel::class.java).map { it.toDomainModel() }
+        trySend(listTask)
         awaitClose {
             Log.d(TAG, "getTasks: closed callbackFlow")
         }
@@ -36,7 +38,7 @@ class TaskRepositoryImpl @Inject constructor(
         firebaseFirestore
             .collection(firebaseAuth.currentUser!!.uid)
             .document(task.id)
-            .set(task.toDto())
+            .set(task.toDtoModel())
             .addOnSuccessListener {
                 trySend(Result.success(Unit))
             }

@@ -25,10 +25,15 @@ class AuthRepositoryImpl @Inject constructor(
                 .addOnSuccessListener { authResult ->
                     authResult.user?.let { trySend(Result.success(User(it.displayName!!, it.email!!))) }
                         ?: trySend(Result.failure(defaultErrorAuthException))
-                }.addOnFailureListener { e -> trySend(Result.failure(e)) }
+                    close()
+                }.addOnFailureListener { e -> 
+                    trySend(Result.failure(e))
+                    close()
+                }
         } catch (e: Exception) {
             e.printStackTrace()
             trySend(Result.failure(e))
+            close()
         }
         awaitClose {
             Log.d(TAG, "closed login callback flow")
@@ -52,15 +57,19 @@ class AuthRepositoryImpl @Inject constructor(
                     authResult.user
                         ?.updateProfile(userProfileChangeRequest { displayName = fullName })
                         ?.addOnSuccessListener {
-                            authResult.user?.let { user -> trySend(Result.success(User(user.displayName!!, user.email!!))) }
-                                ?: trySend(Result.failure(defaultErrorAuthException))
+                            authResult.user?.let { user -> 
+                                trySend(Result.success(User(user.displayName!!, user.email!!))) 
+                            } ?: trySend(Result.failure(defaultErrorAuthException))
+                            close()
                         }?.addOnFailureListener { trySend(Result.failure(it)) }
                 }.addOnFailureListener {
                     trySend(Result.failure(it))
+                    close()
                 }
         } catch (e: Exception) {
             e.printStackTrace()
             trySend(Result.failure(e))
+            close()
         }
         awaitClose {
             Log.d(TAG, "closed register callback flow")

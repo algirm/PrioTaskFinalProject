@@ -35,6 +35,11 @@ class HomeViewModel @Inject constructor(
         _uiState.update { 
             it.copy(user = user)
         }
+        viewModelScope.launch { 
+            taskRepository.getTasks().collect {
+                Log.d(TAG, "getUser: $it")
+            }
+        }
     }
     
     fun addTask() = viewModelScope.launch { 
