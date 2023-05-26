@@ -1,6 +1,7 @@
 package com.finalproject.priotask.data.repository
 
 import android.util.Log
+import com.finalproject.priotask.data.toDto
 import com.finalproject.priotask.domain.model.Task
 import com.finalproject.priotask.domain.repository.TaskRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -34,7 +35,8 @@ class TaskRepositoryImpl @Inject constructor(
     override fun addTask(task: Task): Flow<Result<Unit>> = callbackFlow {
         firebaseFirestore
             .collection(firebaseAuth.currentUser!!.uid)
-            .add(task)
+            .document(task.id)
+            .set(task.toDto())
             .addOnSuccessListener {
                 trySend(Result.success(Unit))
             }

@@ -177,7 +177,8 @@ class MainActivity : ComponentActivity() {
                             val homeViewModel: HomeViewModel = hiltViewModel()
                             val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
                             HomeScreen(
-                                uiState = homeUiState
+                                uiState = homeUiState,
+                                onAddTaskButtonClick = homeViewModel::addTask
                             )
                         }
                     }

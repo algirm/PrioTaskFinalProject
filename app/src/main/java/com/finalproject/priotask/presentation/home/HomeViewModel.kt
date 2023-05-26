@@ -1,5 +1,6 @@
 package com.finalproject.priotask.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.finalproject.priotask.common.BaseViewModel
 import com.finalproject.priotask.domain.model.Priority
@@ -11,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
 
@@ -37,7 +37,7 @@ class HomeViewModel @Inject constructor(
         }
     }
     
-    fun addUser() = viewModelScope.launch { 
+    fun addTask() = viewModelScope.launch { 
         val task = Task(
             "1",
             "Tugas Kuliah",
@@ -46,10 +46,10 @@ class HomeViewModel @Inject constructor(
             Date()
         )
         taskRepository.addTask(task).collect { result ->
-            result.onSuccess { 
-                
-            }.onFailure { 
-                
+            result.onSuccess {
+                Log.d(TAG, "addTask: success add task")
+            }.onFailure {
+                Log.d(TAG, "addTask: failed add task")
             }
         }
     }

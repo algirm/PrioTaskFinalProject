@@ -31,7 +31,8 @@ import com.finalproject.priotask.ui.theme.PrioTaskTheme
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
-    uiState: HomeUiState = HomeUiState()
+    uiState: HomeUiState = HomeUiState(),
+    onAddTaskButtonClick: () -> Unit = {}
 ) {
     val refreshing = remember { false }
     val pullRefreshState = rememberPullRefreshState(refreshing, { })
@@ -116,7 +117,7 @@ fun HomeScreen(
             }
         }
         Button(
-            onClick = {},
+            onClick = onAddTaskButtonClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
