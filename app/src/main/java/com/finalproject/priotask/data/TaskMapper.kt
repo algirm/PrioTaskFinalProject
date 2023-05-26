@@ -8,8 +8,9 @@ fun Task.toDtoModel() = TaskDtoModel(
     name = this.name,
     description = this.description,
     priority = when (this.priority) {
-        Priority.Common -> 0
-        Priority.Important -> 1
+        Priority.Low -> 0
+        Priority.Moderate -> 1
+        Priority.High -> 2
     },
     deadline = this.deadline
 )
@@ -19,9 +20,10 @@ fun TaskDtoModel.toDomainModel() = Task(
     name = this.name!!,
     description = this.description!!,
     priority = when (this.priority!!) {
-        0 -> Priority.Common
-        1 -> Priority.Important
-        else -> Priority.Common
+        0 -> Priority.Low
+        1 -> Priority.Moderate
+        2 -> Priority.High
+        else -> Priority.Low
     },
     deadline = this.deadline!!
 )

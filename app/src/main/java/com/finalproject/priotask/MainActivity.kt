@@ -24,7 +24,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.finalproject.priotask.domain.model.User
 import com.finalproject.priotask.presentation.home.HomeScreen
+import com.finalproject.priotask.presentation.home.HomeUiIntent
 import com.finalproject.priotask.presentation.home.HomeViewModel
+import com.finalproject.priotask.presentation.home.SortState
 import com.finalproject.priotask.presentation.login.*
 import com.finalproject.priotask.presentation.register.*
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
@@ -178,7 +180,15 @@ class MainActivity : ComponentActivity() {
                             val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
                             HomeScreen(
                                 uiState = homeUiState,
-                                onAddTaskButtonClick = homeViewModel::addTask
+                                onAddTaskButtonClick = homeViewModel::addTask,
+                                onSortingTypeClick = {
+                                    val sortIntent = when (it) {
+                                        SortState.All -> HomeUiIntent.SortingAllClicked
+                                        SortState.Priority -> HomeUiIntent.SortingPriorityClicked
+                                        SortState.Time -> HomeUiIntent.SortingTimeClicked
+                                    }
+                                    homeViewModel.onIntent(sortIntent)
+                                }
                             )
                         }
                     }

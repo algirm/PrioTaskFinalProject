@@ -1,6 +1,5 @@
 package com.finalproject.priotask.presentation.home
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -14,15 +13,12 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,7 +31,8 @@ import com.finalproject.priotask.ui.theme.PrioTaskTheme
 @Composable
 fun HomeScreen(
     uiState: HomeUiState = HomeUiState(),
-    onAddTaskButtonClick: () -> Unit = {}
+    onAddTaskButtonClick: () -> Unit = {},
+    onSortingTypeClick: (SortState) -> Unit = {}
 ) {
     val refreshing = remember { false }
     val pullRefreshState = rememberPullRefreshState(refreshing, { })
@@ -44,19 +41,15 @@ fun HomeScreen(
         derivedStateOf { listState.firstVisibleItemIndex > 1 }
     }
 
-    val context = LocalContext.current
-    val testClick: (String) -> Unit = { message ->
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
-
     Scaffold(
         topBar = {
             CollapsingSortSection(
                 modifier = Modifier
-                    .padding(18.dp, 12.dp, 18.dp, 32.dp)
+                    .padding(18.dp, 12.dp, 18.dp, 18.dp)
                     .fillMaxWidth(),
                 isCollapsed = isCollapsed,
-                sortState = uiState.sortState
+                sortState = uiState.sortState,
+                onSortingTypeClick = onSortingTypeClick
             )
         }
     ) {
@@ -83,9 +76,10 @@ fun HomeScreen(
                 item {
                     CollapsingSortSection(
                         modifier = Modifier
-                            .padding(18.dp, 12.dp, 18.dp, 32.dp)
+                            .padding(18.dp, 12.dp, 18.dp, 18.dp)
                             .fillMaxWidth(),
-                        sortState = uiState.sortState
+                        sortState = uiState.sortState,
+                        onSortingTypeClick = onSortingTypeClick
                     )
                 }
                 items(10) {
@@ -117,7 +111,8 @@ fun HomeScreen(
 fun CollapsingSortSection(
     modifier: Modifier = Modifier,
     isCollapsed: Boolean = true,
-    sortState: SortState
+    sortState: SortState,
+    onSortingTypeClick: (SortState) -> Unit
 ) {
     AnimatedVisibility(visible = isCollapsed) {
         Row(
@@ -126,7 +121,7 @@ fun CollapsingSortSection(
         ) {
             Button(
                 modifier = Modifier,
-                onClick = { },
+                onClick = { onSortingTypeClick(SortState.All) },
                 shape = RoundedCornerShape(12.dp),
                 enabled = sortState !is SortState.All,
                 colors = ButtonDefaults.buttonColors(
@@ -140,7 +135,7 @@ fun CollapsingSortSection(
             }
             Button(
                 modifier = Modifier,
-                onClick = { },
+                onClick = { onSortingTypeClick(SortState.Time) },
                 shape = RoundedCornerShape(12.dp),
                 enabled = sortState !is SortState.Time,
                 colors = ButtonDefaults.buttonColors(
@@ -154,7 +149,7 @@ fun CollapsingSortSection(
             }
             Button(
                 modifier = Modifier,
-                onClick = { },
+                onClick = { onSortingTypeClick(SortState.Priority) },
                 shape = RoundedCornerShape(12.dp),
                 enabled = sortState !is SortState.Priority,
                 colors = ButtonDefaults.buttonColors(

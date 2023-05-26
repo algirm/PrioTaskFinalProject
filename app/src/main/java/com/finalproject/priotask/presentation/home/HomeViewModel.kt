@@ -7,6 +7,7 @@ import com.finalproject.priotask.domain.model.Priority
 import com.finalproject.priotask.domain.model.Task
 import com.finalproject.priotask.domain.repository.AuthRepository
 import com.finalproject.priotask.domain.repository.TaskRepository
+import com.finalproject.priotask.domain.usecase.GetTasksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val taskRepository: TaskRepository
+    private val getTasksUseCase: GetTasksUseCase
 ) : BaseViewModel() {
     
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -30,16 +31,29 @@ class HomeViewModel @Inject constructor(
         }
     }
     
+    fun onIntent(homeUiIntent: HomeUiIntent) {
+        when (homeUiIntent) {
+            HomeUiIntent.SortingAllClicked -> _uiState.update { it.copy(sortState = SortState.All) }
+            HomeUiIntent.SortingPriorityClicked -> _uiState.update { it.copy(sortState = SortState.Priority) }
+            HomeUiIntent.SortingTimeClicked -> _uiState.update { it.copy(sortState = SortState.Time) }
+        }
+    }
+    
     private fun getUser() {
         val user = authRepository.getUser()
         _uiState.update { 
             it.copy(user = user)
         }
-//        viewModelScope.launch { 
-//            taskRepository.getTasks().collect {
-//                Log.d(TAG, "getUser: $it")
-//            }
-//        } //TODO UNCOMMENT AFTER IMPL COLLAPSING TOOLBAR & TASK CARD READY
+        viewModelScope.launch { 
+            getTasksUseCase().collect { result ->
+                result.onSuccess {  resultTasks ->
+                    Log.d(TAG, "getUser: $resultTasks")
+                    _uiState.update { it.copy(isLoading = false, tasks = resultTasks) }
+                }.onFailure { e ->
+                    Log.e(TAG, "getUser: failed get tasks", e)
+                }
+            }
+        } //TODO UNCOMMENT AFTER IMPL COLLAPSING TOOLBAR & TASK CARD READY
     }
     
     fun addTask() = viewModelScope.launch { 
@@ -47,16 +61,16 @@ class HomeViewModel @Inject constructor(
             "1",
             "Tugas Kuliah",
             "Deskripsi Tugas Kuliah",
-            Priority.Important,
+            Priority.Moderate,
             Date()
         )
-        taskRepository.addTask(task).collect { result ->
-            result.onSuccess {
-                Log.d(TAG, "addTask: success add task")
-            }.onFailure {
-                Log.d(TAG, "addTask: failed add task")
-            }
-        }
+//        taskRepository.addTask(task).collect { result ->
+//            result.onSuccess {
+//                Log.d(TAG, "addTask: success add task")
+//            }.onFailure {
+//                Log.d(TAG, "addTask: failed add task")
+//            }
+//        }
     }
     
 }
