@@ -35,11 +35,11 @@ class HomeViewModel @Inject constructor(
         _uiState.update { 
             it.copy(user = user)
         }
-        viewModelScope.launch { 
-            taskRepository.getTasks().collect {
-                Log.d(TAG, "getUser: $it")
-            }
-        }
+//        viewModelScope.launch { 
+//            taskRepository.getTasks().collect {
+//                Log.d(TAG, "getUser: $it")
+//            }
+//        } //TODO UNCOMMENT AFTER IMPL COLLAPSING TOOLBAR & TASK CARD READY
     }
     
     fun addTask() = viewModelScope.launch { 
