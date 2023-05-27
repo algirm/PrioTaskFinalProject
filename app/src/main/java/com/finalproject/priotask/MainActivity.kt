@@ -5,6 +5,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -14,6 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -53,7 +60,7 @@ class MainActivity : ComponentActivity() {
         setContentApp()
         isLoading = false
     }
-    
+
     private fun setContentApp() {
         setContent {
             PrioTaskTheme {
@@ -91,6 +98,7 @@ class MainActivity : ComponentActivity() {
                                     LoginUiEvent.NavigateToRegisterScreen -> {
                                         navController.navigate(route = "register")
                                     }
+
                                     LoginUiEvent.NavigateToHomeScreen -> {
                                         navController.navigate("home") {
                                             popUpTo("login") {
@@ -98,6 +106,7 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                     }
+
                                     null -> {}
                                 }
                             }
@@ -106,7 +115,10 @@ class MainActivity : ComponentActivity() {
                                 scope.launch {
                                     loginUiState.errorMessage?.let { errorMessage ->
                                         loginViewModel.errorMessageConsumed()
-                                        snackbarHostState.showSnackbar(errorMessage, actionLabel = "OK")
+                                        snackbarHostState.showSnackbar(
+                                            errorMessage,
+                                            actionLabel = "OK"
+                                        )
                                     }
                                 }
                             }
@@ -154,6 +166,7 @@ class MainActivity : ComponentActivity() {
                                         navController.navigateUp()
                                         Log.d("TAG", "register event: after NavigateUp")
                                     }
+
                                     RegisterUiEvent.NavigateToHomeScreen -> {
                                         navController.navigate("home") {
                                             popUpTo("login") {
@@ -161,6 +174,7 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                     }
+
                                     null -> { /* todo error wrong event type sent here */
                                     }
                                 }
@@ -170,7 +184,10 @@ class MainActivity : ComponentActivity() {
                                 scope.launch {
                                     registerUiState.errorMessage?.let { errorMessage ->
                                         registerViewModel.errorMessageShown()
-                                        snackbarHostState.showSnackbar(errorMessage, actionLabel = "OK")
+                                        snackbarHostState.showSnackbar(
+                                            errorMessage,
+                                            actionLabel = "OK"
+                                        )
                                     }
                                 }
                             }
@@ -193,7 +210,7 @@ class MainActivity : ComponentActivity() {
                                 onRefresh = { homeViewModel.onIntent(HomeUiIntent.RefreshContent) }
                             )
                             LaunchedEffect(homeUiState.errorMessage) {
-                                scope.launch { 
+                                scope.launch {
                                     homeUiState.errorMessage?.let { errorMessage ->
                                         homeViewModel.errorMessageShown()
                                         snackbarHostState.showSnackbar(errorMessage, "OK")
