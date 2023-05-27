@@ -12,7 +12,8 @@ fun Task.toDtoModel() = TaskDtoModel(
         Priority.Moderate -> 1
         Priority.High -> 2
     },
-    deadline = this.deadline
+    deadline = this.deadline,
+    createdAt = this.createdAt
 )
 
 fun TaskDtoModel.toDomainModel() = Task(
@@ -25,5 +26,6 @@ fun TaskDtoModel.toDomainModel() = Task(
         2 -> Priority.High
         else -> Priority.Low
     },
-    deadline = this.deadline!!
+    deadline = this.deadline!!,
+    createdAt = this.createdAt!!
 )

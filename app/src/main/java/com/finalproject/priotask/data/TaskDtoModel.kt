@@ -8,5 +8,6 @@ data class TaskDtoModel(
     val name: String? = null,
     val description: String? = null,
     val priority: Int? = null,
-    val deadline: Date? = null
+    val deadline: Date? = null,
+    val createdAt: Date? = null
 )

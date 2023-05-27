@@ -71,9 +71,11 @@ class HomeViewModel @Inject constructor(
             SortState.All -> {
                 tasks.sortedBy { it.deadline }
             }
+
             SortState.Time -> {
                 tasks.sortedBy { it.deadline }
             }
+
             SortState.Priority -> {
                 tasks.sortedBy {
                     when (it.priority) {
@@ -107,7 +109,7 @@ class HomeViewModel @Inject constructor(
                     _uiState.update { it.copy(isRefreshing = false, errorMessage = e.message) }
                 }
             }
-        } //TODO UNCOMMENT AFTER IMPL COLLAPSING TOOLBAR & TASK CARD READY
+        }
     }
 
     fun addTask() = viewModelScope.launch {
@@ -116,6 +118,7 @@ class HomeViewModel @Inject constructor(
             "Tugas Kuliah",
             "Deskripsi Tugas Kuliah",
             Priority.Moderate,
+            Date(1685169340925),
             Date()
         )
 //        taskRepository.addTask(task).collect { result ->
