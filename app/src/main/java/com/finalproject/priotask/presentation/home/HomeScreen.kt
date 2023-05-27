@@ -58,10 +58,12 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            Surface(elevation = 2.dp) {
+            Surface(
+                elevation = 2.dp
+            ) {
                 CollapsingSortSection(
                     modifier = Modifier
-                        .padding(18.dp, 0.dp, 18.dp, 0.dp)
+                        .padding(18.dp, 8.dp, 18.dp, 8.dp)
                         .fillMaxWidth(),
                     isCollapsed = isCollapsed,
                     sortState = uiState.sortState,
