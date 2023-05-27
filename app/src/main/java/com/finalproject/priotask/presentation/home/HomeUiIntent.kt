@@ -5,4 +5,5 @@ sealed class HomeUiIntent {
     object SortingTimeClicked : HomeUiIntent()
     object SortingPriorityClicked : HomeUiIntent()
     object RefreshContent : HomeUiIntent()
+    object AddTaskClicked : HomeUiIntent()
 }

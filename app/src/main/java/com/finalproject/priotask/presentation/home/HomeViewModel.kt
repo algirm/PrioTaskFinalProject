@@ -63,6 +63,8 @@ class HomeViewModel @Inject constructor(
             HomeUiIntent.RefreshContent -> {
                 getUser(true)
             }
+
+            HomeUiIntent.AddTaskClicked -> publishEvent(HomeUiEvent.NavigateToAddTaskScreen)
         }
     }
 
