@@ -4,7 +4,7 @@ import com.finalproject.priotask.domain.model.Priority
 import com.finalproject.priotask.domain.model.Task
 
 fun Task.toDtoModel() = TaskDtoModel(
-    id = this.id,
+    id = this.id.ifBlank { null },
     name = this.name,
     description = this.description,
     priority = when (this.priority) {

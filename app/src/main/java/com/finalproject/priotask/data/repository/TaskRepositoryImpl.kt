@@ -21,10 +21,12 @@ class TaskRepositoryImpl @Inject constructor(
 ) : TaskRepository {
 
     private val TAG = this.javaClass.simpleName
-
+    
     override fun getTasks(forceRefresh: Boolean): Flow<List<Task>> = callbackFlow {
         val result = firebaseFirestore
-            .collection(firebaseAuth.currentUser!!.uid)
+            .collection("tasks")
+            .document(firebaseAuth.currentUser!!.uid)
+            .collection("user_tasks")
             .get(if (forceRefresh) Source.SERVER else Source.DEFAULT)
             .await()
 
@@ -38,12 +40,16 @@ class TaskRepositoryImpl @Inject constructor(
 
     override fun addTask(task: Task): Flow<Boolean> = callbackFlow { 
         val addResult = firebaseFirestore
-            .collection(firebaseAuth.currentUser!!.uid)
+            .collection("tasks")
+            .document(firebaseAuth.currentUser!!.uid)
+            .collection("user_tasks")
             .add(task.toDtoModel())
             .await()
         
         firebaseFirestore
-            .collection(firebaseAuth.currentUser!!.uid)
+            .collection("tasks")
+            .document(firebaseAuth.currentUser!!.uid)
+            .collection("user_tasks")
             .document(addResult.id)
             .update("id", addResult.id)
             .await()
@@ -52,6 +58,38 @@ class TaskRepositoryImpl @Inject constructor(
         close()
         awaitClose {
             Log.d(TAG, "addTask: closed callbackFlow")
+        }
+    }
+
+    override fun editTask(task: Task): Flow<Boolean> = callbackFlow {
+        firebaseFirestore
+            .collection("tasks")
+            .document(firebaseAuth.currentUser!!.uid)
+            .collection("user_tasks")
+            .document(task.id)
+            .set(task.toDtoModel())
+            .await()
+
+        trySend(true)
+        close()
+        awaitClose {
+            Log.d(TAG, "editTask: closed callbackFlow")
+        }
+    }
+
+    override fun deleteTask(id: String): Flow<Boolean> = callbackFlow {
+        firebaseFirestore
+            .collection("tasks")
+            .document(firebaseAuth.currentUser!!.uid)
+            .collection("user_tasks")
+            .document(id)
+            .delete()
+            .await()
+
+        trySend(true)
+        close()
+        awaitClose {
+            Log.d(TAG, "deleteTask: closed callbackFlow")
         }
     }
 }

@@ -70,7 +70,7 @@ fun AddEditScreen(
     uiState: AddEditUiState = AddEditUiState(),
     onArrowBackClick: () -> Unit = {},
     onAddEditClick: (Task) -> Unit = {},
-    onDoneTaskClick: () -> Unit = {}
+    onDoneTaskClick: (String) -> Unit = {}
 ) {
     Log.d("TAG", "AddEditScreen: Asuww isEdit is $isEdit")
     var namaTugasText by remember {
@@ -347,8 +347,8 @@ fun AddEditScreen(
         ) {
             Button(
                 onClick = {
-                    val task = Task(
-                        id = "",
+                    val taskNew = Task(
+                        id = task?.id ?: "",
                         name = namaTugasText,
                         description = deskripsiTugasText,
                         priority = selectedPriority,
@@ -359,7 +359,7 @@ fun AddEditScreen(
                         ),
                         createdAt = Date()
                     )
-                    onAddEditClick(task)
+                    onAddEditClick(taskNew)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -375,7 +375,9 @@ fun AddEditScreen(
 
             if (isEdit) {
                 Button(
-                    onClick = { /*onAddTaskClick*/ },
+                    onClick = {
+                        task?.let { onDoneTaskClick(it.id) }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1.4f),

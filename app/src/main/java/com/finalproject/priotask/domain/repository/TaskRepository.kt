@@ -9,4 +9,8 @@ interface TaskRepository {
 
     fun addTask(task: Task): Flow<Boolean>
     
+    fun editTask(task: Task): Flow<Boolean>
+    
+    fun deleteTask(id: String): Flow<Boolean>
+    
 }

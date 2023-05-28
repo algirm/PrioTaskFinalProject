@@ -195,8 +195,8 @@ class MainActivity : ComponentActivity() {
                                         Log.d("TAG", "register event: ${Random.nextInt()}")
 //                                        navController.navigateUp()
                                         navController.navigate("login") {
-                                            popUpTo("register") { 
-                                                saveState = true 
+                                            popUpTo("register") {
+                                                saveState = true
                                                 inclusive = true
                                             }
                                             restoreState = true
@@ -237,7 +237,7 @@ class MainActivity : ComponentActivity() {
                             val homeViewModel: HomeViewModel = hiltViewModel()
                             val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
                             val scope = rememberCoroutineScope()
-                            
+
                             if (navController.currentBackStackEntry?.savedStateHandle?.contains("refresh_home") == true) {
                                 val addEditScreenResult = navController
                                     .currentBackStackEntry
@@ -311,7 +311,9 @@ class MainActivity : ComponentActivity() {
                             val addEditUiState by addEditViewModel.uiState.collectAsStateWithLifecycle()
                             val scope = rememberCoroutineScope()
 
-                            var task: Task? = null
+                            var task: Task? by remember {
+                                mutableStateOf(null)
+                            }
                             var isEdit by remember {
                                 mutableStateOf(false)
                             }
@@ -333,13 +335,20 @@ class MainActivity : ComponentActivity() {
                                         ?.remove<Task>("task")
                                 }
                             }
-                            
+
                             AddEditScreen(
                                 uiState = addEditUiState,
                                 isEdit = isEdit,
                                 task = task,
                                 onAddEditClick = {
-                                    addEditViewModel.onIntent(AddEditUiIntent.AddTask(it))
+                                    if (isEdit) {
+                                        addEditViewModel.onIntent(AddEditUiIntent.DoneEditTask(it))
+                                    } else {
+                                        addEditViewModel.onIntent(AddEditUiIntent.AddTask(it))
+                                    }
+                                },
+                                onDoneTaskClick = {
+                                    addEditViewModel.onIntent(AddEditUiIntent.DoneTask(it))
                                 },
                                 onArrowBackClick = {
                                     navController.navigateUp()
@@ -348,7 +357,7 @@ class MainActivity : ComponentActivity() {
                             addEditViewModel.event.collectWithLifecycle() { event ->
                                 when (event as? AddEditUiEvent) {
                                     AddEditUiEvent.Success -> {
-                                        mainSnackScope.launch { 
+                                        mainSnackScope.launch {
                                             snackbarHostState.showSnackbar("Succeed")
                                         }
                                         navController
@@ -357,6 +366,7 @@ class MainActivity : ComponentActivity() {
                                             ?.set("refresh_home", true)
                                         navController.navigateUp()
                                     }
+
                                     null -> {}
                                 }
                             }
