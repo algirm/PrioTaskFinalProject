@@ -30,23 +30,26 @@ class TaskRepositoryImpl @Inject constructor(
 
         val listTask = result.toObjects(TaskDtoModel::class.java).map { it.toDomainModel() }
         trySend(listTask)
+        close()
         awaitClose {
             Log.d(TAG, "getTasks: closed callbackFlow")
         }
     }
 
-    override fun addTask(task: Task): Flow<Result<Unit>> = callbackFlow {
+    override fun addTask(task: Task): Flow<Boolean> = callbackFlow { 
+        val addResult = firebaseFirestore
+            .collection(firebaseAuth.currentUser!!.uid)
+            .add(task.toDtoModel())
+            .await()
+        
         firebaseFirestore
             .collection(firebaseAuth.currentUser!!.uid)
-            .document(task.id)
-            .set(task.toDtoModel())
-            .addOnSuccessListener {
-                trySend(Result.success(Unit))
-            }
-            .addOnFailureListener {
-                trySend(Result.failure(it))
-            }
-
+            .document(addResult.id)
+            .update("id", addResult.id)
+            .await()
+        
+        trySend(true)
+        close()
         awaitClose {
             Log.d(TAG, "addTask: closed callbackFlow")
         }

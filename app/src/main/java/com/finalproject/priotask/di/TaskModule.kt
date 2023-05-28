@@ -2,7 +2,9 @@ package com.finalproject.priotask.di
 
 import com.finalproject.priotask.data.repository.TaskRepositoryImpl
 import com.finalproject.priotask.domain.repository.TaskRepository
+import com.finalproject.priotask.domain.usecase.AddTaskUseCase
 import com.finalproject.priotask.domain.usecase.GetTasksUseCase
+import com.finalproject.priotask.domain.usecase.addTask
 import com.finalproject.priotask.domain.usecase.getTasks
 import dagger.Binds
 import dagger.Module
@@ -19,6 +21,12 @@ object TaskModule {
     @ViewModelScoped
     fun provideGetTasksUseCase(taskRepository: TaskRepository): GetTasksUseCase {
         return GetTasksUseCase { getTasks(taskRepository, it) }
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideAddTasksUseCase(taskRepository: TaskRepository): AddTaskUseCase {
+        return AddTaskUseCase { addTask(taskRepository, it) }
     }
 }
 

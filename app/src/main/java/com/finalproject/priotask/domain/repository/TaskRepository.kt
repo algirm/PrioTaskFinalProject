@@ -7,5 +7,6 @@ interface TaskRepository {
     
     fun getTasks(forceRefresh: Boolean): Flow<List<Task>>
 
-    fun addTask(task: Task): Flow<Result<Unit>>
+    fun addTask(task: Task): Flow<Boolean>
+    
 }

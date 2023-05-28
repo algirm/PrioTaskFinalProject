@@ -12,9 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -112,24 +110,6 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun addTask() = viewModelScope.launch {
-        val task = Task(
-            "1",
-            "Tugas Kuliah",
-            "Deskripsi Tugas Kuliah",
-            Priority.Moderate,
-            Date(1685169340925),
-            Date()
-        )
-//        taskRepository.addTask(task).collect { result ->
-//            result.onSuccess {
-//                Log.d(TAG, "addTask: success add task")
-//            }.onFailure {
-//                Log.d(TAG, "addTask: failed add task")
-//            }
-//        }
     }
 
     fun errorMessageShown() = _uiState.update { it.copy(errorMessage = null) }

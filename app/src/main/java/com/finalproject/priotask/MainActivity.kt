@@ -25,6 +25,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.finalproject.priotask.domain.model.User
 import com.finalproject.priotask.presentation.add_edit.AddEditScreen
+import com.finalproject.priotask.presentation.add_edit.AddEditUiEvent
+import com.finalproject.priotask.presentation.add_edit.AddEditUiIntent
+import com.finalproject.priotask.presentation.add_edit.AddEditUiState
+import com.finalproject.priotask.presentation.add_edit.AddEditViewModel
 import com.finalproject.priotask.presentation.home.HomeScreen
 import com.finalproject.priotask.presentation.home.HomeUiEvent
 import com.finalproject.priotask.presentation.home.HomeUiIntent
@@ -268,21 +272,35 @@ class MainActivity : ComponentActivity() {
                             route = "addtask",
                             enterTransition = { slideInHorizontally(tween(500)) { it } },
                             exitTransition = { slideOutHorizontally(tween(500)) { it } }
-//                            exitTransition = { slideOutHorizontally(tween(500)) },
-//                            popEnterTransition = {
-//                                when (initialState.destination.route) {
-//                                    "addtask" -> slideInHorizontally(tween(700))
-//                                    else -> null
-//                                }
-//                            },
-//                            popExitTransition = {
-//                                when (targetState.destination.route) {
-//                                    "home" -> slideOutHorizontally(tween(700))
-//                                    else -> null
-//                                }
-//                            }
                         ) {
-                            AddEditScreen()
+                            val addEditViewModel: AddEditViewModel = hiltViewModel()
+                            val addEditUiState by addEditViewModel.uiState.collectAsStateWithLifecycle()
+                            val scope = rememberCoroutineScope()
+                            AddEditScreen(
+                                uiState = addEditUiState,
+                                onAddEditClick = {
+                                    addEditViewModel.onIntent(AddEditUiIntent.AddTask(it))
+                                },
+                                onArrowBackClick = {
+                                    navController.navigateUp()
+                                }
+                            )
+                            addEditViewModel.event.collectWithLifecycle() { event ->
+                                when (event as? AddEditUiEvent) {
+                                    AddEditUiEvent.Success -> {
+                                        navController.navigateUp()
+                                    }
+                                    null -> {}
+                                }
+                            }
+                            LaunchedEffect(addEditUiState.errorMessage) {
+                                scope.launch {
+                                    addEditUiState.errorMessage?.let { errorMessage ->
+                                        addEditViewModel.errorMessageShown()
+                                        snackbarHostState.showSnackbar(errorMessage, "OK")
+                                    }
+                                }
+                            }
                         }
                     }
                 }

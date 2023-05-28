@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,9 +68,47 @@ fun AddEditScreen(
     task: Task? = null,
     uiState: AddEditUiState = AddEditUiState(),
     onArrowBackClick: () -> Unit = {},
-    onDoneEditClick: () -> Unit = {},
+    onAddEditClick: (Task) -> Unit = {},
     onDoneTaskClick: () -> Unit = {}
 ) {
+    var namaTugasText by remember {
+        mutableStateOf(task?.name ?: "")
+    }
+    var deskripsiTugasText by remember {
+        mutableStateOf(task?.description ?: "")
+    }
+
+    var expandedPriority by remember {
+        mutableStateOf(false)
+    }
+    var selectedPriority: Priority by remember {
+        mutableStateOf(task?.priority ?: Priority.Low)
+    }
+
+    val dateFormatter = remember { SimpleDateFormat("dd MMM yyyy", Locale.ROOT) }
+    val timeFormatter = remember { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = task?.deadline?.time ?: Date().time
+    )
+
+    var initHour = 0
+    var initMinute = 0
+    task?.let {
+        val cal = Calendar.getInstance()
+        cal.clear()
+        cal.time = it.deadline
+        cal.clear(Calendar.SECOND)
+        initHour = cal.get(Calendar.HOUR_OF_DAY)
+        initMinute = cal.get(Calendar.MINUTE)
+    }
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = initHour,
+        initialMinute = initMinute,
+        false
+    )
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +124,7 @@ fun AddEditScreen(
                     modifier = Modifier
                         .size(24.dp)
                         .align(Alignment.CenterStart),
-                    onClick = {}
+                    onClick = onArrowBackClick
                 ) {
                     Image(
                         modifier = Modifier
@@ -103,18 +142,12 @@ fun AddEditScreen(
                 )
             }
 
-            var namaTugasText by remember { 
-                mutableStateOf(task?.name ?: "") 
-            }
-            var deskripsiTugasText by remember { 
-                mutableStateOf(task?.description ?: "")
-            }
-
             LabeledTextField(
                 value = namaTugasText,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
+                    imeAction = ImeAction.Next,
+                    capitalization = KeyboardCapitalization.Sentences
                 ),
                 placeHolder = "Nama Tugas",
                 onValueChange = { namaTugasText = it }
@@ -126,20 +159,14 @@ fun AddEditScreen(
                 value = deskripsiTugasText,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
+                    imeAction = ImeAction.Next,
+                    capitalization = KeyboardCapitalization.Sentences
                 ),
                 placeHolder = "Deskripsi Tugas",
                 onValueChange = { deskripsiTugasText = it }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
-
-            var expandedPriority by remember {
-                mutableStateOf(false)
-            }
-            var selectedPriority: Priority by remember {
-                mutableStateOf(task?.priority ?: Priority.Low)
-            }
 
             ExposedDropdownMenuBox(
                 modifier = Modifier.fillMaxWidth(0.6f),
@@ -209,32 +236,6 @@ fun AddEditScreen(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
-            
-            val dateFormatter = remember { SimpleDateFormat("dd MMM yyyy", Locale.ROOT) }
-            val timeFormatter = remember { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
-            var showDatePicker by remember { mutableStateOf(false) }
-            var showTimePicker by remember { mutableStateOf(false) }
-            val datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = task?.deadline?.time ?: Date().time
-            )
-            
-            var initHour = 0
-            var initMinute = 0
-            task?.let { 
-                val cal = Calendar.getInstance()
-                cal.clear()
-                cal.time = it.deadline
-                cal.clear(Calendar.SECOND)
-                initHour = cal.get(Calendar.HOUR_OF_DAY)
-                initMinute = cal.get(Calendar.MINUTE)
-            }
-            
-            val timePickerState = rememberTimePickerState(
-                initialHour = initHour, 
-                initialMinute = initMinute, 
-                false
-            )
-            
 
             ExposedDropdownMenuBox(
                 modifier = Modifier.fillMaxWidth(0.6f),
@@ -268,9 +269,11 @@ fun AddEditScreen(
                             disabledIndicatorColor = Color.Transparent
                         ),
                         visualTransformation = PlaceholderTransformation(
-                            "${dateFormatter.format(
-                                Date(datePickerState.selectedDateMillis ?: Date().time)
-                            )}\n(${timeFormatter.format(calendar.time)})"
+                            "${
+                                dateFormatter.format(
+                                    Date(datePickerState.selectedDateMillis ?: Date().time)
+                                )
+                            }\n(${timeFormatter.format(calendar.time)})"
                         ),
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) }
                     )
@@ -325,7 +328,7 @@ fun AddEditScreen(
                     )
                 }
             }
-            
+
             if (uiState.isLoading) {
                 Box(Modifier.fillMaxSize()) {
                     CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -341,7 +344,21 @@ fun AddEditScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Button(
-                onClick = { /*onAddTaskClick*/ },
+                onClick = {
+                    val task = Task(
+                        id = "",
+                        name = namaTugasText,
+                        description = deskripsiTugasText,
+                        priority = selectedPriority,
+                        deadline = provideDate(
+                            datePickerState.selectedDateMillis,
+                            timePickerState.hour,
+                            timePickerState.minute
+                        ),
+                        createdAt = Date()
+                    )
+                    onAddEditClick(task)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1.6f),
@@ -362,7 +379,7 @@ fun AddEditScreen(
                         .weight(1.4f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(0xFF4C4B16),
+                        backgroundColor = Color(0xFF54B435),
                         contentColor = Color.White
                     )
                 ) {
@@ -375,6 +392,19 @@ fun AddEditScreen(
             }
         }
     }
+}
+
+private fun provideDate(
+    dateLong: Long?,
+    hour: Int,
+    minute: Int
+): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = Date(dateLong!!)
+    calendar.set(Calendar.HOUR_OF_DAY, hour)
+    calendar.set(Calendar.MINUTE, minute)
+    calendar.clear(Calendar.SECOND)
+    return calendar.time
 }
 
 @Preview(showBackground = true)
