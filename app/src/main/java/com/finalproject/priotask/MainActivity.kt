@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -25,7 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.finalproject.priotask.domain.model.User
-import com.finalproject.priotask.presentation.addtask.AddTaskScreen
+import com.finalproject.priotask.presentation.add_edit.AddEditScreen
 import com.finalproject.priotask.presentation.home.HomeScreen
 import com.finalproject.priotask.presentation.home.HomeUiEvent
 import com.finalproject.priotask.presentation.home.HomeUiIntent
@@ -283,7 +282,7 @@ class MainActivity : ComponentActivity() {
 //                                }
 //                            }
                         ) {
-                            AddTaskScreen()
+                            AddEditScreen()
                         }
                     }
                 }
