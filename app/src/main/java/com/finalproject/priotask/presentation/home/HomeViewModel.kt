@@ -69,7 +69,7 @@ class HomeViewModel @Inject constructor(
     private fun sortList(tasks: List<Task>, sortState: SortState): List<Task> {
         return when (sortState) {
             SortState.All -> {
-                tasks.sortedBy { it.deadline }
+                tasks.sortedByDescending { it.createdAt }
             }
 
             SortState.Time -> {
@@ -77,7 +77,7 @@ class HomeViewModel @Inject constructor(
             }
 
             SortState.Priority -> {
-                tasks.sortedBy {
+                tasks.sortedByDescending {
                     when (it.priority) {
                         Priority.High -> 2
                         Priority.Low -> 0

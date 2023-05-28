@@ -16,18 +16,22 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.finalproject.priotask.domain.model.Task
 import com.finalproject.priotask.domain.model.User
 import com.finalproject.priotask.presentation.add_edit.AddEditScreen
 import com.finalproject.priotask.presentation.add_edit.AddEditUiEvent
 import com.finalproject.priotask.presentation.add_edit.AddEditUiIntent
-import com.finalproject.priotask.presentation.add_edit.AddEditUiState
 import com.finalproject.priotask.presentation.add_edit.AddEditViewModel
 import com.finalproject.priotask.presentation.home.HomeScreen
 import com.finalproject.priotask.presentation.home.HomeUiEvent
@@ -70,6 +74,7 @@ class MainActivity : ComponentActivity() {
             PrioTaskTheme {
                 val navController = rememberAnimatedNavController()
                 val snackbarHostState = remember { SnackbarHostState() }
+                val mainSnackScope = rememberCoroutineScope()
 
                 Scaffold(
                     snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -232,6 +237,22 @@ class MainActivity : ComponentActivity() {
                             val homeViewModel: HomeViewModel = hiltViewModel()
                             val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
                             val scope = rememberCoroutineScope()
+                            
+                            if (navController.currentBackStackEntry?.savedStateHandle?.contains("refresh_home") == true) {
+                                val addEditScreenResult = navController
+                                    .currentBackStackEntry
+                                    ?.savedStateHandle
+                                    ?.getStateFlow("refresh_home", false)
+                                    ?.collectAsStateWithLifecycle()
+                                    ?.value
+                                if (addEditScreenResult == true) {
+                                    homeViewModel.onIntent(HomeUiIntent.RefreshContent)
+                                    navController
+                                        .currentBackStackEntry
+                                        ?.savedStateHandle
+                                        ?.remove<Boolean>("refresh_home")
+                                }
+                            }
 
                             HomeScreen(
                                 uiState = homeUiState,
@@ -246,13 +267,20 @@ class MainActivity : ComponentActivity() {
                                     }
                                     homeViewModel.onIntent(sortIntent)
                                 },
-                                onRefresh = { homeViewModel.onIntent(HomeUiIntent.RefreshContent) }
+                                onRefresh = { homeViewModel.onIntent(HomeUiIntent.RefreshContent) },
+                                onTaskClick = {
+                                    navController
+                                        .currentBackStackEntry
+                                        ?.savedStateHandle
+                                        ?.set("task", it)
+                                    navController.navigate("add_edit_task")
+                                }
                             )
 
                             homeViewModel.event.collectWithLifecycle { uiEvent ->
                                 when (uiEvent as? HomeUiEvent) {
                                     HomeUiEvent.NavigateToAddTaskScreen -> {
-                                        navController.navigate("addtask")
+                                        navController.navigate("add_edit_task")
                                     }
 
                                     null -> {}
@@ -269,15 +297,47 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable(
-                            route = "addtask",
+                            route = "add_edit_task",
+                            arguments = listOf(
+                                navArgument("task") {
+                                    type = NavType.ParcelableType(Task::class.java)
+                                    nullable = true
+                                }
+                            ),
                             enterTransition = { slideInHorizontally(tween(500)) { it } },
                             exitTransition = { slideOutHorizontally(tween(500)) { it } }
                         ) {
                             val addEditViewModel: AddEditViewModel = hiltViewModel()
                             val addEditUiState by addEditViewModel.uiState.collectAsStateWithLifecycle()
                             val scope = rememberCoroutineScope()
+
+                            var task: Task? = null
+                            var isEdit by remember {
+                                mutableStateOf(false)
+                            }
+                            if (navController.previousBackStackEntry?.savedStateHandle?.contains("task") == true) {
+                                val addEditScreenResult = navController
+                                    .previousBackStackEntry
+                                    ?.savedStateHandle
+                                    ?.getStateFlow<Task?>("task", null)
+                                    ?.collectAsStateWithLifecycle()
+                                    ?.value
+                                Log.d("TAG", "setContentAppBro1")
+                                if (addEditScreenResult != null) {
+                                    Log.d("TAG", "setContentAppBro2")
+                                    task = addEditScreenResult
+                                    isEdit = true
+                                    navController
+                                        .previousBackStackEntry
+                                        ?.savedStateHandle
+                                        ?.remove<Task>("task")
+                                }
+                            }
+                            
                             AddEditScreen(
                                 uiState = addEditUiState,
+                                isEdit = isEdit,
+                                task = task,
                                 onAddEditClick = {
                                     addEditViewModel.onIntent(AddEditUiIntent.AddTask(it))
                                 },
@@ -288,6 +348,13 @@ class MainActivity : ComponentActivity() {
                             addEditViewModel.event.collectWithLifecycle() { event ->
                                 when (event as? AddEditUiEvent) {
                                     AddEditUiEvent.Success -> {
+                                        mainSnackScope.launch { 
+                                            snackbarHostState.showSnackbar("Succeed")
+                                        }
+                                        navController
+                                            .previousBackStackEntry
+                                            ?.savedStateHandle
+                                            ?.set("refresh_home", true)
                                         navController.navigateUp()
                                     }
                                     null -> {}

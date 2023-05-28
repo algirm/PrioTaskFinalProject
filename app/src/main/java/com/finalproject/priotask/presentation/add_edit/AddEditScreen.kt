@@ -1,5 +1,6 @@
 package com.finalproject.priotask.presentation.add_edit
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,6 +72,7 @@ fun AddEditScreen(
     onAddEditClick: (Task) -> Unit = {},
     onDoneTaskClick: () -> Unit = {}
 ) {
+    Log.d("TAG", "AddEditScreen: Asuww isEdit is $isEdit")
     var namaTugasText by remember {
         mutableStateOf(task?.name ?: "")
     }
