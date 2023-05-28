@@ -43,7 +43,8 @@ fun HomeScreen(
     onAddTaskButtonClick: () -> Unit = {},
     onSortingTypeClick: (SortState) -> Unit = {},
     onRefresh: () -> Unit = {},
-    onTaskClick: (Task) -> Unit = {}
+    onTaskClick: (Task) -> Unit = {},
+    onSettingsClick: () -> Unit = {}
 ) {
     val pullRefreshState = rememberPullRefreshState(uiState.isRefreshing, onRefresh)
     val listState = rememberLazyListState()
@@ -82,7 +83,8 @@ fun HomeScreen(
                     HomeHeader(
                         Modifier.padding(horizontal = 18.dp),
                         uiState.user?.fullName,
-                        uiState.user?.email
+                        uiState.user?.email,
+                        onSettingsClick
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                 }
@@ -303,7 +305,8 @@ fun TaskCard(
 fun HomeHeader(
     modifier: Modifier = Modifier,
     fullName: String?,
-    email: String?
+    email: String?,
+    onSettingsClick: () -> Unit
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -330,7 +333,7 @@ fun HomeHeader(
             )
             Text(text = email ?: "user@email.com", color = Color.Gray, fontSize = 12.sp)
         }
-        IconButton(onClick = { /* Handle settings button click */ }) {
+        IconButton(onClick = onSettingsClick) {
             Icon(
                 imageVector = Icons.Default.Settings,
                 contentDescription = "Settings"

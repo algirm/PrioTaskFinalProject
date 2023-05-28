@@ -40,6 +40,7 @@ import com.finalproject.priotask.presentation.home.HomeViewModel
 import com.finalproject.priotask.presentation.home.SortState
 import com.finalproject.priotask.presentation.login.*
 import com.finalproject.priotask.presentation.register.*
+import com.finalproject.priotask.presentation.settings.SettingsScreen
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 import com.finalproject.priotask.util.collectWithLifecycle
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -274,6 +275,9 @@ class MainActivity : ComponentActivity() {
                                         ?.savedStateHandle
                                         ?.set("task", it)
                                     navController.navigate("add_edit_task")
+                                },
+                                onSettingsClick = {
+                                    navController.navigate("settings")
                                 }
                             )
 
@@ -298,12 +302,6 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(
                             route = "add_edit_task",
-                            arguments = listOf(
-                                navArgument("task") {
-                                    type = NavType.ParcelableType(Task::class.java)
-                                    nullable = true
-                                }
-                            ),
                             enterTransition = { slideInHorizontally(tween(500)) { it } },
                             exitTransition = { slideOutHorizontally(tween(500)) { it } }
                         ) {
@@ -324,9 +322,7 @@ class MainActivity : ComponentActivity() {
                                     ?.getStateFlow<Task?>("task", null)
                                     ?.collectAsStateWithLifecycle()
                                     ?.value
-                                Log.d("TAG", "setContentAppBro1")
                                 if (addEditScreenResult != null) {
-                                    Log.d("TAG", "setContentAppBro2")
                                     task = addEditScreenResult
                                     isEdit = true
                                     navController
@@ -378,6 +374,13 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             }
+                        }
+                        composable(
+                            route = "settings",
+                            enterTransition = { slideInHorizontally(tween(500)) { it } },
+                            exitTransition = { slideOutHorizontally(tween(500)) { it } }
+                        ) {
+                            SettingsScreen()
                         }
                     }
                 }
