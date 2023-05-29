@@ -1,6 +1,5 @@
 package com.finalproject.priotask.presentation.add_edit
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,7 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.finalproject.priotask.R
-import com.finalproject.priotask.common.LabeledTextField
+import com.finalproject.priotask.common.LabeledTextFieldInput
 import com.finalproject.priotask.common.TimePickerDialog
 import com.finalproject.priotask.domain.model.Priority
 import com.finalproject.priotask.domain.model.Task
@@ -72,7 +71,6 @@ fun AddEditScreen(
     onAddEditClick: (Task) -> Unit = {},
     onDoneTaskClick: (String) -> Unit = {}
 ) {
-    Log.d("TAG", "AddEditScreen: Asuww isEdit is $isEdit")
     var namaTugasText by remember {
         mutableStateOf(task?.name ?: "")
     }
@@ -144,7 +142,7 @@ fun AddEditScreen(
                 )
             }
 
-            LabeledTextField(
+            LabeledTextFieldInput(
                 value = namaTugasText,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -157,7 +155,7 @@ fun AddEditScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            LabeledTextField(
+            LabeledTextFieldInput(
                 value = deskripsiTugasText,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,

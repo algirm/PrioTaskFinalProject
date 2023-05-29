@@ -1,6 +1,5 @@
 package com.finalproject.priotask.presentation.register
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.finalproject.priotask.R
 import com.finalproject.priotask.common.FormTextField
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
-import com.finalproject.priotask.util.rememberForeverLazyListState
 
 @Composable
 fun RegisterScreen(
@@ -54,7 +51,6 @@ fun RegisterScreen(
         LazyColumn(
             modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
-//            state = rememberForeverLazyListState(key = "registerrr")
         ) {
             item {
                 Column(

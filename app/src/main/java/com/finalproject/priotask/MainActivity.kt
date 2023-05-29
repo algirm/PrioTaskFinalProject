@@ -46,6 +46,7 @@ import com.finalproject.priotask.util.collectWithLifecycle
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -277,7 +278,14 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("add_edit_task")
                                 },
                                 onSettingsClick = {
-                                    navController.navigate("settings")
+                                    val user = homeUiState.user
+                                    val name = user?.fullName?.split("")?.getOrNull(0)
+                                    val fullName = user?.fullName
+                                    val email = user?.email
+                                    navController
+                                        .navigate(
+                                            "settings/user?name=$name&fullName=$fullName&email=$email"
+                                        )
                                 }
                             )
 
@@ -350,7 +358,7 @@ class MainActivity : ComponentActivity() {
                                     navController.navigateUp()
                                 }
                             )
-                            addEditViewModel.event.collectWithLifecycle() { event ->
+                            addEditViewModel.event.collectWithLifecycle { event ->
                                 when (event as? AddEditUiEvent) {
                                     AddEditUiEvent.Success -> {
                                         mainSnackScope.launch {
@@ -376,11 +384,43 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable(
-                            route = "settings",
+                            route = "settings/user?name={name}&fullName={fullName}&email={email}",
                             enterTransition = { slideInHorizontally(tween(500)) { it } },
-                            exitTransition = { slideOutHorizontally(tween(500)) { it } }
-                        ) {
-                            SettingsScreen()
+                            exitTransition = { slideOutHorizontally(tween(500)) { it } },
+                            arguments = listOf(
+                                navArgument("name") {
+                                    type = NavType.StringType
+                                    nullable = true
+                                },
+                                navArgument("fullName") {
+                                    type = NavType.StringType
+                                    nullable = true
+                                },
+                                navArgument("email") {
+                                    type = NavType.StringType
+                                    nullable = true
+                                }
+                            )
+                        ) { backStackEntry ->
+                            val name = backStackEntry.arguments?.getString("name")
+                            val fullName = backStackEntry.arguments?.getString("fullName")
+                            val email = backStackEntry.arguments?.getString("email")
+                            SettingsScreen(
+                                name = name,
+                                fullName = fullName,
+                                email = email,
+                                onArrowBackClick = {
+                                    navController.navigateUp()
+                                },
+                                onLogoutClick = {
+                                    FirebaseAuth.getInstance().signOut()
+                                    navController.navigate("login") {
+                                        popUpTo("home") {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
                         }
                     }
                 }

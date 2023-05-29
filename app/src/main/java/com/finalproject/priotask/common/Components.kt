@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -22,6 +19,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
+import com.finalproject.priotask.util.PlaceholderTransformation
 
 @Composable
 fun FormTextField(
@@ -69,7 +67,7 @@ fun FormTextField(
 }
 
 @Composable
-fun LabeledTextField(
+fun LabeledTextFieldInput(
     value: String = "",
     placeHolder: String = "",
     onValueChange: (String) -> Unit = {},
@@ -132,6 +130,35 @@ fun LabeledTextField(
 }
 
 @Composable
+fun LabeledTextField(
+    modifier: Modifier = Modifier,
+    label: String,
+    text: String = ""
+) {
+    Surface(
+        modifier = modifier,
+        elevation = 4.dp,
+        shape = RoundedCornerShape(24.dp),
+    ) {
+        TextField(
+            readOnly = true,
+            value = "",
+            onValueChange = {},
+            label = { Text(text = label) },
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = Color.Gray,
+                disabledTextColor = Color.Transparent,
+                backgroundColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            visualTransformation = PlaceholderTransformation(text)
+        )
+    }
+}
+
+@Composable
 fun DropDownWithTextField(
     modifier: Modifier = Modifier,
     value: String = "",
@@ -181,9 +208,9 @@ fun DropDownWithTextField(
 fun LabeledTextFieldPreview() {
     PrioTaskTheme {
         Column(Modifier.padding(12.dp)) {
-            LabeledTextField(placeHolder = "Username")
+            LabeledTextFieldInput(placeHolder = "Username")
             Spacer(modifier = Modifier.height(32.dp))
-            LabeledTextField(placeHolder = "Password")
+            LabeledTextFieldInput(placeHolder = "Password")
         }
     }
 }
