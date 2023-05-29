@@ -279,7 +279,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onSettingsClick = {
                                     val user = homeUiState.user
-                                    val name = user?.fullName?.split("")?.getOrNull(0)
+                                    val name = user?.fullName?.split(" ")?.getOrNull(0)
                                     val fullName = user?.fullName
                                     val email = user?.email
                                     navController
