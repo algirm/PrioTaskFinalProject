@@ -93,7 +93,7 @@ fun AddEditScreen(
         initialSelectedDateMillis = task?.deadline?.time ?: Date().time
     )
 
-    var initHour = 0
+    var initHour = 22
     var initMinute = 0
     task?.let {
         val cal = Calendar.getInstance()
@@ -282,13 +282,10 @@ fun AddEditScreen(
 
             if (showDatePicker) {
                 DatePickerDialog(
-                    onDismissRequest = {
-
-                    },
+                    onDismissRequest = {},
                     confirmButton = {
                         TextButton(
                             onClick = {
-
                                 showDatePicker = false
                                 showTimePicker = true
                             }
@@ -299,8 +296,8 @@ fun AddEditScreen(
                     dismissButton = {
                         TextButton(
                             onClick = {
-
                                 showDatePicker = false
+//                                datePickerState.setSelection(null)
                             }
                         ) {
                             Text(text = "Cancel")
@@ -315,7 +312,6 @@ fun AddEditScreen(
             if (showTimePicker) {
                 TimePickerDialog(
                     onCancel = {
-
                         showTimePicker = false
                     },
                     onConfirm = {
@@ -351,7 +347,7 @@ fun AddEditScreen(
                         description = deskripsiTugasText,
                         priority = selectedPriority,
                         deadline = provideDate(
-                            datePickerState.selectedDateMillis,
+                            datePickerState.selectedDateMillis ?: Date().time,
                             timePickerState.hour,
                             timePickerState.minute
                         ),
