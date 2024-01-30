@@ -41,8 +41,7 @@ fun LoginScreen(
     onEmailTextChange: (LoginUiIntent) -> Unit = {},
     onPasswordTextChange: (LoginUiIntent) -> Unit = {},
     onRegisterClick: () -> Unit = {},
-    onLoginClick: () -> Unit = {},
-    painter: Painter? = null
+    onLoginClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier.fillMaxSize()
