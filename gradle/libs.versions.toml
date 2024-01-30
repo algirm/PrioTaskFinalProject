@@ -1,0 +1,19 @@
+[versions]
+agp = "8.2.0"
+gms-google-services = "4.3.15"
+hilt-android = "2.48"
+kotlin = "1.9.20"
+ksp = "1.9.22-1.0.17"
+
+[libraries]
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-android" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+googleKsp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "gms-google-services" }
+hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
