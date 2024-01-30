@@ -96,14 +96,8 @@ class MainActivity : ComponentActivity() {
 
                             LoginScreen(
                                 uiState = loginUiState,
-                                onEmailTextChange = { emailText ->
-                                    loginViewModel.onIntent(LoginUiIntent.EmailTextChanged(emailText))
-                                },
-                                onPasswordTextChange = { passwordText ->
-                                    loginViewModel.onIntent(
-                                        LoginUiIntent.PasswordTextChanged(passwordText)
-                                    )
-                                },
+                                onEmailTextChange = loginViewModel::onIntent,
+                                onPasswordTextChange = loginViewModel::onIntent,
                                 onRegisterClick = { loginViewModel.onIntent(LoginUiIntent.RegisterClicked) },
                                 onLoginClick = { loginViewModel.onIntent(LoginUiIntent.LoginClicked) },
                                 modifier = Modifier.padding(padding)

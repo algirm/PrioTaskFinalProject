@@ -1,6 +1,5 @@
 package com.finalproject.priotask.presentation.login
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -33,16 +31,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.finalproject.priotask.R
 import com.finalproject.priotask.common.FormTextField
+import com.finalproject.priotask.common.ImagePainter
 import com.finalproject.priotask.ui.theme.PrioTaskTheme
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     uiState: LoginUiState = LoginUiState(),
-    onEmailTextChange: (String) -> Unit = {},
-    onPasswordTextChange: (String) -> Unit = {},
+    onEmailTextChange: (LoginUiIntent) -> Unit = {},
+    onPasswordTextChange: (LoginUiIntent) -> Unit = {},
     onRegisterClick: () -> Unit = {},
-    onLoginClick: () -> Unit = {}
+    onLoginClick: () -> Unit = {},
+    painter: Painter? = null
 ) {
     Box(
         modifier = modifier.fillMaxSize()
@@ -58,14 +58,15 @@ fun LoginScreen(
                         .padding(horizontal = 18.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.person_sit),
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(48.dp)
-                    )
+                    ImagePainter(id = R.drawable.person_sit)
+//                    Image(
+//                        painter = painterResource(id = R.drawable.person_sit),
+//                        contentDescription = "",
+//                        contentScale = ContentScale.Crop,
+//                        modifier = Modifier
+//                            .fillMaxSize()
+//                            .padding(48.dp)
+//                    )
                     Text(text = "PrioTask", fontWeight = FontWeight.Bold, fontSize = 24.sp)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -83,7 +84,7 @@ fun LoginScreen(
                             imeAction = ImeAction.Next
                         ),
                         placeHolder = "Email",
-                        onValueChange = onEmailTextChange
+                        onValueChange = { onEmailTextChange(LoginUiIntent.EmailTextChanged(it)) }
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                     FormTextField(
@@ -93,7 +94,7 @@ fun LoginScreen(
                             imeAction = ImeAction.Done
                         ),
                         placeHolder = "Password",
-                        onValueChange = onPasswordTextChange,
+                        onValueChange = { onPasswordTextChange(LoginUiIntent.PasswordTextChanged(it)) },
                         visualTransformation = PasswordVisualTransformation()
                     )
                     Spacer(modifier = Modifier.height(24.dp))

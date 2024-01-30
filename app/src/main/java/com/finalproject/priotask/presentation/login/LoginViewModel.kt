@@ -18,7 +18,7 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun onIntent(loginUiIntent: LoginUiIntent) {
+    fun onIntent(loginUiIntent: LoginUiIntent) = viewModelScope.launch {
         when (loginUiIntent) {
             is LoginUiIntent.EmailTextChanged -> _uiState.update { it.copy(emailText = loginUiIntent.emailText) }
             is LoginUiIntent.PasswordTextChanged -> _uiState.update { it.copy(passwordText = loginUiIntent.passwordText) }
